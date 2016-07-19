@@ -126,7 +126,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/rec_audio"
+                android:id="@+id/imageViewRecordAudio"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/mic_button"
                 android:layout_centerInParent="true" />
@@ -153,7 +153,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageView7"
+                android:id="@+id/imageViewSOS"
                 android:layout_gravity="center_horizontal"
                 android:src="@drawable/help_button"
                 android:layout_centerInParent="true" />
