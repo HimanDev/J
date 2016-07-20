@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 
 /**
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 public class MainApp extends Activity {
 
     ImageView imageViewRecordVideo,imageViewRecordAudio,imageViewSOS;
+    LinearLayout llMyRecordings;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,6 +22,7 @@ public class MainApp extends Activity {
         imageViewRecordVideo =(ImageView)findViewById(R.id.imageViewRecordVideo);
         imageViewRecordAudio=(ImageView)findViewById(R.id.imageViewRecordAudio);
         imageViewSOS=(ImageView)findViewById(R.id.imageViewSOS);
+        llMyRecordings=(LinearLayout)findViewById(R.id.llMyRecordings);
         imageViewRecordVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +52,13 @@ public class MainApp extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainApp.this, SOSActivity.class);
+                startActivity(intent);
+            }
+        });
+        llMyRecordings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainApp.this, MyRecordings.class);
                 startActivity(intent);
             }
         });

@@ -11,7 +11,8 @@
     <uses-feature android:name="android.hardware.microphone"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
 
 
@@ -35,6 +36,7 @@
         </activity>
         <activity android:name=".AudioRecorderTest"></activity>
         <activity android:name=".SOSActivity"></activity>
+        <activity android:name=".MyRecordings"></activity>
 
     </application>
 

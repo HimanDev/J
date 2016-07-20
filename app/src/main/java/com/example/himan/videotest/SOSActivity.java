@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.telephony.SmsManager;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.view.View;
@@ -94,7 +95,9 @@ public class SOSActivity extends Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        Toast.makeText(this,getLastBestLocation().toString(),Toast.LENGTH_LONG).show();
+        Location l=getLastBestLocation();
+//        SmsManager smsManager = SmsManager.getDefault();
+//        smsManager.sendTextMessage("+919224430743", null, "please help me, iam here \n"+getLocationUrl(l), null, null);
         mRecorder = new MediaRecorder();
         setContentView(R.layout.record_audio);
         startRecording();
@@ -134,6 +137,12 @@ public class SOSActivity extends Activity {
         }
     }
 
+    private String getLocationUrl(Location location){
+        if(location!=null)
+        return "http://maps.google.com/?q="+location.getLatitude()+","+location.getLongitude();
+        return null;
+
+    }
 
     private Location getLastBestLocation() {
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -143,13 +152,13 @@ public class SOSActivity extends Activity {
             return null;
         }
         try {
-//            Location locationGPS = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            Location locationNet = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location locationGPS = manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location locationNet = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             long GPSLocationTime = 0;
-//            if (null != locationGPS) {
-//                GPSLocationTime = locationGPS.getTime();
-//            }
+            if (null != locationGPS) {
+                GPSLocationTime = locationGPS.getTime();
+            }
 
             long NetLocationTime = 0;
 
@@ -157,13 +166,13 @@ public class SOSActivity extends Activity {
                 NetLocationTime = locationNet.getTime();
             }
 
-//            if (0 < GPSLocationTime - NetLocationTime) {
-//                return locationGPS;
-//            } else {
-                return locatiitonNet;
-//            }
+            if (0 < GPSLocationTime - NetLocationTime) {
+                return locationGPS;
+            } else {
+                return locationNet;
+            }
         } catch (SecurityException e) {
-
+    e.printStackTrace();
         }
         return null;
     }
