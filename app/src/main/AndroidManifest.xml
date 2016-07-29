@@ -37,6 +37,10 @@
         <activity android:name=".AudioRecorderTest"></activity>
         <activity android:name=".SOSActivity"></activity>
         <activity android:name=".MyRecordings"></activity>
+        <activity android:name=".VideoPlayBack"></activity>
+        <activity android:name=".AddPerson"></activity>
+
+
 
     </application>
 

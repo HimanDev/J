@@ -51,7 +51,7 @@ public class MainApp extends Activity {
         imageViewSOS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainApp.this, SOSActivity.class);
+                Intent intent = new Intent(MainApp.this, AddPerson.class);
                 startActivity(intent);
             }
         });

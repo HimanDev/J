@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#5c5f5a">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:id="@+id/imageView12"
+            android:src="@drawable/close_yellow" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="-20dp">
+
+        <ImageView
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:id="@+id/imageView7"
+            android:src="@drawable/my_recordings" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="My Recordings"
+            android:id="@+id/textView13"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+            android:textSize="28dp"
+            android:textColor="#ffffff" />
+
+    </LinearLayout>
+
     <view
         android:id="@+id/recycler_view"
         class="android.support.v7.widget.RecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"
-        android:paddingBottom="50dp" />
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
 
 </LinearLayout>

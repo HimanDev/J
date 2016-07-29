@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:weightSum="1"
+    android:baselineAligned="false">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg-color">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".5"
+            android:gravity="left|top">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:id="@+id/imageView18"
+                android:src="@drawable/top_left_back_yellow" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Delete Person"
+        android:id="@+id/textView16"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="40dp" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="265dp"
+                android:layout_height="53dp"
+                android:text="New Text"
+                android:id="@+id/textView21"
+                android:textSize="@dimen/textbox_text_size"
+                android:background="#beeb9f" />
+
+            <ImageView
+                android:layout_width="117dp"
+                android:layout_height="53dp"
+                android:id="@+id/imageView17"
+                android:background="#ff0002"
+                android:src="@drawable/trash"
+                android:padding="10dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        android:id="@+id/textView20"
+        android:background="@drawable/curved_rectangle_yellow"
+        android:layout_gravity="center"
+        android:gravity="center_vertical|center_horizontal"
+        android:textColor="#000000"
+        android:textSize="30dp"
+        android:padding="10dp" />
+
+</LinearLayout>
