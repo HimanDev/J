@@ -11,7 +11,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg-color">
+        android:background="@color/bg_color">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -57,7 +57,7 @@
         android:id="@+id/textView16"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
-        android:textSize="40dp"
+        android:textSize="30dp"
         android:layout_marginTop="-20dp" />
 
     <LinearLayout
@@ -65,31 +65,38 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/radious_border"
-        android:padding="10dp"
         android:layout_marginTop="20dp">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView25"
+            android:id="@+id/imageViewDeletePerson"
             android:src="@drawable/delete_user"
-            android:padding="10dp" />
+            android:padding="15dp" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView26"
+            android:id="@+id/settingsImageView"
             android:src="@drawable/settings"
-            android:padding="10dp" />
+            android:padding="15dp" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView27"
+            android:id="@+id/imageViewAddPerson"
             android:src="@drawable/add_user"
-            android:padding="10dp" />
+            android:background="?attr/selectableItemBackground"
+            android:padding="15dp" />
 
     </LinearLayout>
+    <view
+        android:id="@+id/recycler_view"
+        class="android.support.v7.widget.RecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
 
     <LinearLayout
         android:orientation="horizontal"
@@ -102,10 +109,12 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_width="185dp"
-                android:layout_height="166dp"
-                android:id="@+id/imageView28"
-                android:background="@drawable/sos_button" />
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:id="@+id/imageViewRecord"
+                android:background="@drawable/sos_button_test"
+                android:visibility="visible"
+                android:src="@drawable/tick" />
         </LinearLayout>
     </LinearLayout>
 

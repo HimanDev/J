@@ -4,10 +4,18 @@ package com.example.himan.videotest;
  * Created by himan on 29/7/16.
  */
 public class Person {
-    public Person(int id, String name, String phone, String email) {
+    public Person(int id, String name, String phone,String code, String email) {
         this.id = id;
         this.name = name;
         this.phone = phone;
+        this.code=code;
+        this.email = email;
+    }
+    public Person(String name, String phone, String code,String email) {
+        this.name = name;
+        this.phone = phone;
+        this.code=code;
+
         this.email = email;
     }
 
@@ -47,5 +55,5 @@ public class Person {
     }
 
     private int id;
-    String name,phone,email;
+    String name,phone,email,code;
 }

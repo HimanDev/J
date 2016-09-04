@@ -639,7 +639,7 @@ public class Camera2VideoFragment extends Fragment
             mNextVideoAbsolutePath = getVideoFilePath(getActivity());
 //        }
         mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
-        mMediaRecorder.setMaxDuration(5000); // Set max duration 60 sec.
+        mMediaRecorder.setMaxDuration(60000); // Set max duration 60 sec.
 
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);

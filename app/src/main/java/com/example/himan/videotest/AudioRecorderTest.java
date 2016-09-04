@@ -91,7 +91,7 @@ public class AudioRecorderTest extends Activity
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mRecorder.setOutputFile(getOutputMediaFile());
-        mRecorder.setMaxDuration(5000);
+        mRecorder.setMaxDuration(60000);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {

@@ -44,7 +44,7 @@
                 android:layout_width="46dp"
                 android:layout_height="46dp"
                 android:id="@+id/imageView3"
-                android:src="@drawable/settings" />
+                android:src="@drawable/settings_blue" />
 
             <TextView
                 android:layout_width="wrap_content"

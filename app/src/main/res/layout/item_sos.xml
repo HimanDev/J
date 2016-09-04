@@ -7,27 +7,38 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:weightSum="1" >
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="New Text"
-            android:id="@+id/textView23"
-            android:textSize="@dimen/textbox_text_size"
-            android:background="#beeb9f"
-            android:layout_weight=".25"
-            android:paddingLeft="40dp"
-            android:gravity="center_vertical" />
+        android:layout_height="48dp"
+        android:weightSum="1"
+        android:background="#beeb9f">
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView20"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/imageViewCall"
+            android:background="#beeb9f"
+            android:src="@drawable/tick"
+            android:padding="10dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:layout_width="152dp"
+            android:layout_height="match_parent"
+            android:text="New Text"
+            android:id="@+id/textViewName"
+            android:textSize="@dimen/textbox_text_size"
+            android:background="#beeb9f"
+            android:paddingLeft="10dp"
+            android:gravity="center_vertical"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/imageView19"
             android:background="@color/app_yello"
             android:src="@drawable/call"
             android:padding="10dp"
-            android:layout_weight=".75" />
+            android:visibility="visible" />
     </LinearLayout>
+
 </LinearLayout>

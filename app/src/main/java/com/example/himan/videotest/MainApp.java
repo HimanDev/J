@@ -51,8 +51,10 @@ public class MainApp extends Activity {
         imageViewSOS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainApp.this, AddPerson.class);
+                Intent intent = new Intent(MainApp.this, SosActivity.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.push_left, R.anim.push_right);
+
             }
         });
         llMyRecordings.setOnClickListener(new View.OnClickListener() {
@@ -60,23 +62,25 @@ public class MainApp extends Activity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainApp.this, MyRecordings.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.push_left, R.anim.push_right);
+
             }
         });
 
 
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        View decorView = getWindow().getDecorView();
-        if (hasFocus) {
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+//        View decorView = getWindow().getDecorView();
+//        if (hasFocus) {
+//            decorView.setSystemUiVisibility(
+//                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
+//    }
 }

@@ -39,6 +39,13 @@
         <activity android:name=".MyRecordings"></activity>
         <activity android:name=".VideoPlayBack"></activity>
         <activity android:name=".AddPerson"></activity>
+        <activity android:name=".DeletePersonActivity"></activity>
+        <activity android:name=".SosActivity"></activity>
+        <activity android:name=".HelpActivity"></activity>
+
+        <service android:name=".AudioRecordService"
+            android:exported="false"/>
+
 
 
 

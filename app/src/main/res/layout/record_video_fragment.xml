@@ -97,7 +97,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:id="@+id/ivStartStop"
-                    android:src="@drawable/stop"
+                    android:src="@mipmap/btn_video_online"
                     android:background="@drawable/circle_background"
                     android:padding="10dp" />
 

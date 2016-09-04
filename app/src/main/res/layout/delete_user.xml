@@ -10,7 +10,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg-color">
+        android:background="@color/bg_color">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -20,8 +20,8 @@
             android:gravity="left|top">
 
             <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:id="@+id/imageView18"
                 android:src="@drawable/top_left_back_yellow" />
         </LinearLayout>
@@ -35,35 +35,23 @@
         android:id="@+id/textView16"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
-        android:textSize="40dp" />
+        android:textSize="30dp"
+        android:layout_marginTop="-20dp" />
+
+    <view
+        android:id="@+id/recycler_view"
+        class="android.support.v7.widget.RecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:weightSum="1">
-
-            <TextView
-                android:layout_width="265dp"
-                android:layout_height="53dp"
-                android:text="New Text"
-                android:id="@+id/textView21"
-                android:textSize="@dimen/textbox_text_size"
-                android:background="#beeb9f" />
-
-            <ImageView
-                android:layout_width="117dp"
-                android:layout_height="53dp"
-                android:id="@+id/imageView17"
-                android:background="#ff0002"
-                android:src="@drawable/trash"
-                android:padding="10dp" />
-        </LinearLayout>
     </LinearLayout>
 
     <TextView

@@ -10,7 +10,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg-color">
+        android:background="@color/bg_color">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -73,16 +73,16 @@
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:id="@+id/imageView22"
+            android:id="@+id/minusImageView"
             android:background="@color/app_yello"
             android:src="@drawable/minus"
             android:padding="5dp" />
 
-        <TextView
+        <EditText
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="3 Hrs"
-            android:id="@+id/textView21"
+            android:id="@+id/hoursTextView"
             android:textSize="@dimen/textbox_text_size"
             android:background="#beeb9f"
             android:layout_weight=".6"
@@ -91,7 +91,7 @@
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:id="@+id/imageView23"
+            android:id="@+id/plusImageView"
             android:background="@color/app_yello"
             android:src="@drawable/plus"
             android:padding="5dp" />
@@ -112,7 +112,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText5"
+        android:id="@+id/messageEditText"
         android:layout_gravity="center_horizontal"
         android:background="#beeb9f"
         android:text="Lorem ipsum dolor idunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullam"
@@ -124,7 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Done"
-        android:id="@+id/textView20"
+        android:id="@+id/saveTextView"
         android:background="@drawable/curved_rectangle_yellow"
         android:layout_gravity="center"
         android:gravity="center_vertical|center_horizontal"

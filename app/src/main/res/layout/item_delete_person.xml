@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="New Text"
-            android:id="@+id/textView23"
+            android:id="@+id/textViewName"
             android:textSize="@dimen/textbox_text_size"
             android:background="#beeb9f"
             android:layout_weight=".25"
@@ -24,10 +24,14 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/imageView20"
+            android:id="@+id/imageViewDelete"
             android:background="#ff5335"
             android:src="@drawable/trash"
             android:padding="10dp"
             android:layout_weight=".75" />
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#FFFFFF"/>
 </LinearLayout>
