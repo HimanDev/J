@@ -70,6 +70,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -237,6 +238,9 @@ public class Camera2VideoFragment extends Fragment
         return new Camera2VideoFragment();
     }
 
+    private static File newVideoFolder;
+    private static BlockingQueue<GoogleDriveFileInfo> queue;
+
     /**
      * In this sample, we choose a video size with 3x4 aspect ratio. Also, we don't use sizes
      * larger than 1080p, since MediaRecorder cannot handle such a high-resolution video.
@@ -287,8 +291,17 @@ public class Camera2VideoFragment extends Fragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        newVideoFolder = FolderStructure.getInstance().getCreateNewVideoFolder();
+        queue = FolderStructure.getInstance().getQueue();
+        queue.add(new GoogleDriveFileInfo(newVideoFolder, null, GoogleDriveFileInfo.Operation.ADD));
         return inflater.inflate(R.layout.record_video_fragment, container, false);
     }
 
@@ -488,6 +501,7 @@ public class Camera2VideoFragment extends Fragment
                 public void onInfo(MediaRecorder mr, int what, int extra) {
                     Toast.makeText(getActivity(), "INFO", Toast.LENGTH_SHORT).show();
                     if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                        queue.add(new GoogleDriveFileInfo(new File(mNextVideoAbsolutePath),"mp4", GoogleDriveFileInfo.Operation.ADD));
                         stopRecordingVideo();
                         startRecordingVideo();
                         // 5 000 ms - 5 s
@@ -626,7 +640,6 @@ public class Camera2VideoFragment extends Fragment
         }
         mTextureView.setTransform(matrix);
     }
-
     private void setUpMediaRecorder() throws IOException {
         final Activity activity = getActivity();
         if (null == activity) {
@@ -636,10 +649,12 @@ public class Camera2VideoFragment extends Fragment
         mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
 //        if (mNextVideoAbsolutePath == null || mNextVideoAbsolutePath.isEmpty()) {
-            mNextVideoAbsolutePath = getVideoFilePath(getActivity());
+//            mNextVideoAbsolutePath = getVideoFilePath(getActivity());
+        mNextVideoAbsolutePath = FolderStructure.getInstance().getVideoLocation(newVideoFolder);
+
 //        }
         mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
-        mMediaRecorder.setMaxDuration(60000); // Set max duration 60 sec.
+        mMediaRecorder.setMaxDuration(5000); // Set max duration 60 sec.
 
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);

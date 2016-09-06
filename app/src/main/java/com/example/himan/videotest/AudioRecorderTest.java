@@ -28,32 +28,34 @@ public class AudioRecorderTest extends Activity
 
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
+    private static File newAudioFolder;
 
-    private  String getOutputMediaFile(){
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
 
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d("MyCameraApp", "failed to create directory");
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-           mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "AUD_"+ timeStamp + ".3gp");
-        Toast.makeText(AudioRecorderTest.this,mediaFile.getAbsolutePath(),Toast.LENGTH_SHORT).show();
-        return mediaFile.getAbsolutePath();
-    }
+//    private  String getOutputMediaFile(){
+//        // To be safe, you should check that the SDCard is mounted
+//        // using Environment.getExternalStorageState() before doing this.
+//
+//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+//                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+//        // This location works best if you want the created images to be shared
+//        // between applications and persist after your app has been uninstalled.
+//
+//        // Create the storage directory if it does not exist
+//        if (! mediaStorageDir.exists()){
+//            if (! mediaStorageDir.mkdirs()){
+//                Log.d("MyCameraApp", "failed to create directory");
+//                return null;
+//            }
+//        }
+//
+//        // Create a media file name
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        File mediaFile;
+//           mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+//                    "AUD_"+ timeStamp + ".3gp");
+//        Toast.makeText(AudioRecorderTest.this,mediaFile.getAbsolutePath(),Toast.LENGTH_SHORT).show();
+//        return mediaFile.getAbsolutePath();
+//    }
 
     private void onRecord(boolean start) {
         if (start) {
@@ -90,7 +92,7 @@ public class AudioRecorderTest extends Activity
     private void startRecording() {
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(getOutputMediaFile());
+        mRecorder.setOutputFile(FolderStructure.getInstance().getAudioLocation(newAudioFolder));
         mRecorder.setMaxDuration(60000);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
@@ -165,6 +167,8 @@ public class AudioRecorderTest extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         mRecorder = new MediaRecorder();
+        newAudioFolder  = FolderStructure.getInstance().getCreateNewVideoFolder();
+
         setContentView(R.layout.record_audio);
         startRecording();
         mRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {

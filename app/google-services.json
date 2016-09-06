@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "611921050294",
+    "project_id": "gdrivedemo-1368"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611921050294:android:71e27b7b725961f3",
+        "android_client_info": {
+          "package_name": "com.example.himan.videotest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "611921050294-emak6okcin814pfcmronen46baqnlh1g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.himan.videotest",
+            "certificate_hash": "24B073D8879FAAE7AEF180BDA2403EB5593C3239"
+          }
+        },
+        {
+          "client_id": "611921050294-0nem7srk64q4g1q0djul2aqg9hoh8ka5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwoMIK2tUCLo9P3BnwYRr9bJ6TReg5C0Y"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

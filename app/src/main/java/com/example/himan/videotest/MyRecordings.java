@@ -57,8 +57,7 @@ public class MyRecordings extends Activity {
         @Override
         protected ArrayList<Data> doInBackground(Void... params) {
             ArrayList<Data> dataArrayList = new ArrayList<>();
-            File f = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_PICTURES), "MyCameraApp");
+            File f = FolderStructure.getInstance().getVideoFolder();
 
             File[] files = f.listFiles();
             for (File inFile : files) {

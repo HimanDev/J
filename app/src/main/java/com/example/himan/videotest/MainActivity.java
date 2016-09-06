@@ -1,6 +1,7 @@
 package com.example.himan.videotest;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Environment;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 100;
     public static MainActivity ActivityContext =null;
     public static TextView output;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,4 +170,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
