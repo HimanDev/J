@@ -2,23 +2,25 @@ package com.example.himan.videotest;
 
 
 import android.app.Activity;
-        import android.widget.LinearLayout;
-        import android.os.Bundle;
-        import android.os.Environment;
-        import android.view.ViewGroup;
-        import android.widget.Button;
-        import android.view.View;
-        import android.view.View.OnClickListener;
-        import android.content.Context;
-        import android.util.Log;
-        import android.media.MediaRecorder;
-        import android.media.MediaPlayer;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.os.Bundle;
+import android.os.Environment;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.content.Context;
+import android.util.Log;
+import android.media.MediaRecorder;
+import android.media.MediaPlayer;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.BlockingQueue;
 
 
 public class AudioRecorderTest extends Activity
@@ -29,7 +31,8 @@ public class AudioRecorderTest extends Activity
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
     private static File newAudioFolder;
-
+    private static BlockingQueue<GoogleDriveFileInfo> queue;
+    private String mNextAudioAbsolutePath;
 
 //    private  String getOutputMediaFile(){
 //        // To be safe, you should check that the SDCard is mounted
@@ -59,7 +62,7 @@ public class AudioRecorderTest extends Activity
 
     private void onRecord(boolean start) {
         if (start) {
-            startRecording();
+            // startRecording();
         } else {
             stopRecording();
         }
@@ -92,8 +95,9 @@ public class AudioRecorderTest extends Activity
     private void startRecording() {
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(FolderStructure.getInstance().getAudioLocation(newAudioFolder));
-        mRecorder.setMaxDuration(60000);
+        mNextAudioAbsolutePath = FolderStructure.getInstance().getAudioLocation(newAudioFolder);
+        mRecorder.setOutputFile(mNextAudioAbsolutePath);
+        mRecorder.setMaxDuration(5000);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
@@ -108,7 +112,7 @@ public class AudioRecorderTest extends Activity
     private void stopRecording() {
         mRecorder.stop();
         mRecorder.reset();
-        mRecorder.release();
+      //  mRecorder.release();
 
     }
 
@@ -167,7 +171,9 @@ public class AudioRecorderTest extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         mRecorder = new MediaRecorder();
-        newAudioFolder  = FolderStructure.getInstance().getCreateNewVideoFolder();
+        newAudioFolder  = FolderStructure.getInstance().createNewAudioFolder();
+        queue = FolderStructure.getInstance().getQueue();
+        queue.add(GoogleDriveFileInfo.createFolderInfoObject(newAudioFolder, getString(R.string.Audio_Folder_Drive_Id)));
 
         setContentView(R.layout.record_audio);
         startRecording();
@@ -175,6 +181,8 @@ public class AudioRecorderTest extends Activity
             @Override
             public void onInfo(MediaRecorder mr, int what, int extra) {
                 if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                    Toast.makeText(AudioRecorderTest.this, "audio saved to "+mNextAudioAbsolutePath, Toast.LENGTH_SHORT).show();
+                    queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "3gp"));
                     stopRecording();
                     startRecording();
                     // 5 000 ms - 5 s
@@ -192,6 +200,28 @@ public class AudioRecorderTest extends Activity
             }
         });
     }
+
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//            case R.id.ivStartStop: {
+//                if (mIsRecordingVideo) {
+//                    stopRecordingVideo();
+//                } else {
+//                    startRecordingVideo();
+//                }
+//                break;
+//            }
+//            case R.id.ivDark: {
+//                float brightness = 1 / (float)255;
+//                WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
+//                lp.screenBrightness = 0f;
+//                lp.dimAmount=0.0f;
+//                lp.alpha=0.00f;
+//                getActivity().getWindow().setAttributes(lp);
+//            }
+//        }
+//    }
 
     @Override
     public void onPause() {

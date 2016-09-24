@@ -233,6 +233,7 @@ public class Camera2VideoFragment extends Fragment
     private String mNextVideoAbsolutePath;
     private CaptureRequest.Builder mPreviewBuilder;
     private Surface mRecorderSurface;
+    private ImageView closeAppimageView;
 
     public static Camera2VideoFragment newInstance() {
         return new Camera2VideoFragment();
@@ -301,7 +302,7 @@ public class Camera2VideoFragment extends Fragment
                              Bundle savedInstanceState) {
         newVideoFolder = FolderStructure.getInstance().getCreateNewVideoFolder();
         queue = FolderStructure.getInstance().getQueue();
-        queue.add(new GoogleDriveFileInfo(newVideoFolder, null, GoogleDriveFileInfo.Operation.ADD));
+        queue.add(GoogleDriveFileInfo.createFolderInfoObject(newVideoFolder, getString(R.string.Video_Folder_Drive_Id)));
         return inflater.inflate(R.layout.record_video_fragment, container, false);
     }
 
@@ -312,6 +313,8 @@ public class Camera2VideoFragment extends Fragment
         mButtonVideo.setOnClickListener(this);
         ivDark=(ImageView)view.findViewById(R.id.ivDark);
         ivDark.setOnClickListener(this);
+        closeAppimageView=(ImageView)view.findViewById(R.id.closeAppimageView);
+        closeAppimageView.setOnClickListener(this);
         mTextureView.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -374,7 +377,10 @@ public class Camera2VideoFragment extends Fragment
                 lp.dimAmount=0.0f;
                 lp.alpha=0.00f;
                 getActivity().getWindow().setAttributes(lp);
+                break;
             }
+            case R.id.closeAppimageView:
+               this.getActivity().finish();
         }
     }
 
@@ -501,7 +507,7 @@ public class Camera2VideoFragment extends Fragment
                 public void onInfo(MediaRecorder mr, int what, int extra) {
                     Toast.makeText(getActivity(), "INFO", Toast.LENGTH_SHORT).show();
                     if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                        queue.add(new GoogleDriveFileInfo(new File(mNextVideoAbsolutePath),"mp4", GoogleDriveFileInfo.Operation.ADD));
+                        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath),"mp4"));
                         stopRecordingVideo();
                         startRecordingVideo();
                         // 5 000 ms - 5 s

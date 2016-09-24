@@ -2,6 +2,7 @@ package com.example.himan.videotest;
 
 import android.content.Context;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -10,10 +11,13 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.ResultCallbacks;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.MetadataChangeSet;
 
 import java.io.ByteArrayOutputStream;
@@ -27,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.IllegalFormatCodePointException;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 
@@ -38,14 +43,19 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
     private Exception exception;
     private GoogleApiClient mGoogleApiClient;
     private DriveId driveId = null;
-    private final String TAG="deepakchutiya";
+    private final String TAG="GoogleDriveOperator";
     private static final int REQUEST_CODE_CREATOR = 2;
     MainApp context;
+    SharedPreferences sharedPreferences;
+
+
+
 
 
     public GoogleDriveOperator(MainApp context, GoogleApiClient mGoogleApiClient) {
         this.mGoogleApiClient = mGoogleApiClient;
         this.context = context;
+        this.sharedPreferences=context.getPreferences(Context.MODE_PRIVATE);
     }
 
 
@@ -80,7 +90,7 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
                             Log.i(TAG, "Failed to create new contents.");
                             return;
                         }
-                        if(driveId == null && driveFileInfo.getExtensionType()!=null){
+                        if(driveId == null && driveFileInfo.getExtensionType()!=null) {
                             Log.i(TAG, "Failed DRIVE id");
                             return;
                         }
@@ -119,28 +129,57 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
 
                             MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
                                     .setTitle(title).build();
-                            Drive.DriveApi.getFolder(mGoogleApiClient,
+                            /*Drive.DriveApi.getFolder(mGoogleApiClient,
                                     driveId).createFile(mGoogleApiClient,
                                     metadataChangeSet,
+                                    result.getDriveContents());*/
+                            driveId.asDriveFolder().createFile(mGoogleApiClient,
+                                    metadataChangeSet,
                                     result.getDriveContents());
+
                         }
                         else{
                            driveId = null;
+                           String parentDriveIdDecode = sharedPreferences.getString(driveFileInfo.getrFolderTypeKey(), null);
+                            DriveId parentDriveId = null;
+                            try {
+                                parentDriveId = DriveId.decodeFromString(parentDriveIdDecode);
+                            }
+                            catch(IllegalArgumentException | NullPointerException e){
+                                Log.i(TAG, "Exception occured while getting "+driveFileInfo.getrFolderTypeKey()+" drive Id");
+                                return;
+                            }
                            MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
                                     .setTitle(title).build();
-                           PendingResult result1 = Drive.DriveApi.getRootFolder(mGoogleApiClient).createFolder(mGoogleApiClient,
-                                    metadataChangeSet);
+                           PendingResult result1 = parentDriveId.asDriveFolder().createFolder(mGoogleApiClient,
+                                   metadataChangeSet);
                             //result1.await();
                             result1.setResultCallback(new ResultCallback<DriveFolder.DriveFolderResult>() {
                                 @Override
                                 public void onResult(DriveFolder.DriveFolderResult driveFolderResult) {
                                     driveId = driveFolderResult.getDriveFolder().getDriveId();
+                                    driveFolderResult.getDriveFolder().getMetadata(mGoogleApiClient).setResultCallback(metadataRetrievedCallback);
+
                                 }
                             });
                         }
+
                     }
                 });
     }
+
+
+    private  ResultCallback<DriveResource.MetadataResult> metadataRetrievedCallback = new
+            ResultCallback<DriveResource.MetadataResult>() {
+                @Override
+                public void onResult(DriveResource.MetadataResult mdRslt) {
+                    if (mdRslt != null && mdRslt.getStatus().isSuccess()) {
+                        String link = mdRslt.getMetadata().getWebContentLink();
+                        Log.i(TAG, "");
+                    }
+                }
+            };
+
 
 
 }

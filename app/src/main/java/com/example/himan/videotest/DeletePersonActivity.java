@@ -24,6 +24,7 @@ public class DeletePersonActivity extends Activity {
     private RecyclerView mRecyclerView;
     PersonDatabaseHandler personDatabaseHandler;
     private ImageView imageViewAddPerson;
+    MyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,9 @@ public class DeletePersonActivity extends Activity {
         personDatabaseHandler=new PersonDatabaseHandler(this);
         setContentView(R.layout.delete_user);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),getApplication());
+        mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(DeletePersonActivity.this));
-        new RemoteDataTask().execute();
 
     }
 
@@ -52,7 +54,8 @@ public class DeletePersonActivity extends Activity {
         @Override
         protected void onPostExecute(List<Person> dataArrayList) {
             MyAdapter adapter = new MyAdapter(dataArrayList, DeletePersonActivity.this);
-            mRecyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+
 
 
         }
@@ -117,7 +120,7 @@ public class DeletePersonActivity extends Activity {
         // Return the size of your itemsData (invoked by the layout manager)
         @Override
         public int getItemCount() {
-            return itemsData.size();
+            return (itemsData==null) ? 0:itemsData.size();
         }
 
 

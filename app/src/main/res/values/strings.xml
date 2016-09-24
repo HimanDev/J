@@ -8,4 +8,13 @@
     <string name="permission_request">This sample needs permission for camera and audio recording.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 
+    <!--shared preferences key-->
+    <string name="App_Folder_Name">MyCameraApp</string>
+    <string name="App_Folder_Drive_Id">MyCameraAppDriveId</string>
+    <string name="Videos_Folder_Name">Videos</string>
+    <string name="Video_Folder_Drive_Id">VideosDriveId</string>
+    <string name="Audios_Folder_Name">Audios</string>
+    <string name="Audio_Folder_Drive_Id">AudiosDriveId</string>
+
+
 </resources>

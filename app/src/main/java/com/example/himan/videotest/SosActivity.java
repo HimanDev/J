@@ -26,6 +26,7 @@ public class SosActivity extends Activity {
     private RecyclerView mRecyclerView;
     PersonDatabaseHandler personDatabaseHandler;
     private ImageView imageViewAddPerson,imageViewDeletePerson,imageViewRecord,settingsImageView;
+    MyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +34,14 @@ public class SosActivity extends Activity {
         personDatabaseHandler=new PersonDatabaseHandler(this);
         setContentView(R.layout.sos);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(SosActivity.this));
+        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),this);
+        mRecyclerView.setAdapter(adapter);
+
         imageViewAddPerson=(ImageView) findViewById(R.id.imageViewAddPerson);
         imageViewDeletePerson=(ImageView) findViewById(R.id.imageViewDeletePerson);
         imageViewRecord=(ImageView)findViewById(R.id.imageViewRecord);
         settingsImageView=(ImageView)findViewById(R.id.settingsImageView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(SosActivity.this));
         imageViewAddPerson.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,7 +74,8 @@ public class SosActivity extends Activity {
                 overridePendingTransition(R.anim.push_left, R.anim.push_right);
             }
         });
-        new RemoteDataTask().execute();
+//        new RemoteDataTask().execute();
+
 
 
     }
@@ -78,15 +83,12 @@ public class SosActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        new RemoteDataTask().execute();
+        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),this);//        new RemoteDataTask().execute();
+        adapter.notifyDataSetChanged();
+
     }
 
     private class RemoteDataTask extends AsyncTask<Void, Void, List<Person>> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
         @Override
         protected List<Person> doInBackground(Void... params) {
 
@@ -96,8 +98,9 @@ public class SosActivity extends Activity {
 
         @Override
         protected void onPostExecute(List<Person> dataArrayList) {
-            MyAdapter adapter = new MyAdapter(dataArrayList, SosActivity.this);
-            mRecyclerView.setAdapter(adapter);
+            adapter = new MyAdapter(dataArrayList, SosActivity.this);
+            adapter.notifyDataSetChanged();
+           // mRecyclerView.setAdapter(adapter);
 
 
         }
