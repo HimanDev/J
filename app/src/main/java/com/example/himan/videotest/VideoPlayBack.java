@@ -25,6 +25,7 @@ public class VideoPlayBack extends Activity {
     List<String> link;
     TextView playlistTextView;
     private int size=0;
+    private String folderLocation;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -33,9 +34,13 @@ public class VideoPlayBack extends Activity {
         setContentView(R.layout.video_playback);
         playlistTextView=(TextView)findViewById(R.id.playlist);
         link=new LinkedList<>();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            folderLocation = extras.getString("folderLocation");
+            //The key argument here must match that used in the other activity
+        }
         //declare linklist globally
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
+        File file = new File(folderLocation);
         File[] list = file.listFiles();
         for (File f : list) {
             String name = f.getName();

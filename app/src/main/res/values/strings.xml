@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VideoTest</string>
+    <string name="app_name">SafeApp</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="record">Record</string>
@@ -9,8 +9,8 @@
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 
     <!--shared preferences key-->
-    <string name="App_Folder_Name">MyCameraApp</string>
-    <string name="App_Folder_Drive_Id">MyCameraAppDriveId</string>
+    <string name="App_Folder_Name">SafeApp</string>
+    <string name="App_Folder_Drive_Id">SafeAppDriveId</string>
     <string name="Videos_Folder_Name">Videos</string>
     <string name="Video_Folder_Drive_Id">VideosDriveId</string>
     <string name="Audios_Folder_Name">Audios</string>

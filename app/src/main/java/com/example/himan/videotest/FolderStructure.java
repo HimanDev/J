@@ -1,9 +1,14 @@
 package com.example.himan.videotest;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -19,6 +24,12 @@ public class FolderStructure {
     private static final String ROOT_FOLDER_NAME = "MyCameraApp";
     private static final String VIDEO_FOLDER_NAME = "Videos";
     private static final String AUDIO_FOLDER_NAME = "Audios";
+
+    //
+    private GoogleApiClient googleApiClient;
+    private GoogleAccountCredential googleAccountCredential;
+
+
     private BlockingQueue<GoogleDriveFileInfo> queue = new LinkedBlockingQueue<>();
 
     public File getRootFolder() {
@@ -100,8 +111,45 @@ public class FolderStructure {
         return mediaFile.getAbsolutePath();
 
     }
+    public File getRootVideoFolder(){
+        return videoFolder;
+    }
+    public File getRootAudioFolder(){
+        return audioFolder;
+    }
+
+    /**
+     * This method checks whether network/internet connection available.
+     *
+     * @param context
+     * @return
+     */
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     public BlockingQueue<GoogleDriveFileInfo> getQueue() {
         return queue;
     }
+
+    public GoogleApiClient getGoogleApiClient() {
+        return googleApiClient;
+    }
+
+    public void setGoogleApiClient(GoogleApiClient googleApiClient) {
+        this.googleApiClient = googleApiClient;
+    }
+
+    public GoogleAccountCredential getGoogleAccountCredential() {
+        return googleAccountCredential;
+    }
+
+    public void setGoogleAccountCredential(GoogleAccountCredential googleAccountCredential) {
+        this.googleAccountCredential = googleAccountCredential;
+    }
+
 
 }

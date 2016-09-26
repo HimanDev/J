@@ -1,4 +1,4 @@
-package com.example.himan.videotest;
+package com.example.himan.videotest.repository;
 
 /**
  * Created by himan on 29/8/16.

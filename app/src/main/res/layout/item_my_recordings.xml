@@ -120,7 +120,7 @@
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:id="@+id/imageView16"
+                    android:id="@+id/shareImageView"
                     android:src="@drawable/share"
                     android:background="@drawable/circle_background"
                     android:padding="15dp"

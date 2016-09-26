@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,8 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.File;
-import java.util.ArrayList;
+import com.example.himan.videotest.repository.PersonDto;
+import com.example.himan.videotest.repository.PersonDatabaseRepo;
+
 import java.util.List;
 
 /**
@@ -24,19 +24,19 @@ import java.util.List;
 public class SosActivity extends Activity {
 
     private RecyclerView mRecyclerView;
-    PersonDatabaseHandler personDatabaseHandler;
+    PersonDatabaseRepo personDatabaseHandler;
     private ImageView imageViewAddPerson,imageViewDeletePerson,imageViewRecord,settingsImageView;
     MyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        personDatabaseHandler=new PersonDatabaseHandler(this);
+        personDatabaseHandler=new PersonDatabaseRepo();
         setContentView(R.layout.sos);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(SosActivity.this));
-        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),this);
-        mRecyclerView.setAdapter(adapter);
+//        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),this);
+//        mRecyclerView.setAdapter(adapter);
 
         imageViewAddPerson=(ImageView) findViewById(R.id.imageViewAddPerson);
         imageViewDeletePerson=(ImageView) findViewById(R.id.imageViewDeletePerson);
@@ -74,7 +74,8 @@ public class SosActivity extends Activity {
                 overridePendingTransition(R.anim.push_left, R.anim.push_right);
             }
         });
-//        new RemoteDataTask().execute();
+        new RemoteDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 
 
 
@@ -83,34 +84,32 @@ public class SosActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),this);//        new RemoteDataTask().execute();
-        adapter.notifyDataSetChanged();
+        new RemoteDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
-    private class RemoteDataTask extends AsyncTask<Void, Void, List<Person>> {
+    private class RemoteDataTask extends AsyncTask<Void, Void, List<PersonDto>> {
         @Override
-        protected List<Person> doInBackground(Void... params) {
+        protected List<PersonDto> doInBackground(Void... params) {
 
 
             return personDatabaseHandler.getAllContacts();
         }
 
         @Override
-        protected void onPostExecute(List<Person> dataArrayList) {
+        protected void onPostExecute(List<PersonDto> dataArrayList) {
             adapter = new MyAdapter(dataArrayList, SosActivity.this);
-            adapter.notifyDataSetChanged();
-           // mRecyclerView.setAdapter(adapter);
+            mRecyclerView.setAdapter(adapter);
 
 
         }
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-        private List<Person> itemsData;
+        private List<PersonDto> itemsData;
         Context context;
 
-        public MyAdapter(List<Person> itemsData, Context context) {
+        public MyAdapter(List<PersonDto> itemsData, Context context) {
 
             this.context = context;
             this.itemsData = itemsData;

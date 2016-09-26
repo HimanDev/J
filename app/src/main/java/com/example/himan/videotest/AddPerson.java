@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.himan.videotest.repository.PersonDto;
+import com.example.himan.videotest.repository.PersonDatabaseRepo;
 
 /**
  * Created by himan on 27/7/16.
@@ -15,13 +17,13 @@ public class AddPerson extends Activity {
 
     private ImageView imageViewClose,imageViewSave;
     private EditText  editTextName,editTextPhone,editTextCode,editTextEmail;
-    private PersonDatabaseHandler personDatabaseHandler;
+    private PersonDatabaseRepo personDatabaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_person);
-        personDatabaseHandler=new PersonDatabaseHandler(this);
+        personDatabaseHandler=new PersonDatabaseRepo();
         imageViewClose=(ImageView)findViewById(R.id.imageViewClose);
         imageViewSave=(ImageView)findViewById(R.id.imageViewSave);
         editTextName=(EditText)findViewById(R.id.editTextName);
@@ -35,7 +37,7 @@ public class AddPerson extends Activity {
                 if(personDatabaseHandler.getContactsCount()>4){
                     Toast.makeText(AddPerson.this,"you can not add more than 4 users",Toast.LENGTH_LONG).show();
                 }else {
-                    Person person=new Person(editTextName.getText().toString(),
+                    PersonDto person=new PersonDto(editTextName.getText().toString(),
                             editTextPhone.getText().toString(),editTextCode.getText().toString(),
                             editTextEmail.getText().toString());
                     personDatabaseHandler.addContact(person);

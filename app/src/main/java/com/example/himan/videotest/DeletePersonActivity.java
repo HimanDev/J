@@ -2,7 +2,6 @@ package com.example.himan.videotest;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.himan.videotest.repository.PersonDto;
+import com.example.himan.videotest.repository.PersonDatabaseRepo;
+
 import java.util.List;
 
 /**
@@ -22,39 +24,40 @@ import java.util.List;
 public class DeletePersonActivity extends Activity {
 
     private RecyclerView mRecyclerView;
-    PersonDatabaseHandler personDatabaseHandler;
+    PersonDatabaseRepo personDatabaseHandler;
     private ImageView imageViewAddPerson;
     MyAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        personDatabaseHandler=new PersonDatabaseHandler(this);
+        personDatabaseHandler=new PersonDatabaseRepo();
         setContentView(R.layout.delete_user);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),getApplication());
-        mRecyclerView.setAdapter(adapter);
+//        adapter=new MyAdapter(personDatabaseHandler.getAllContacts(),getApplication());
+//        mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(DeletePersonActivity.this));
+        new RemoteDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
     }
 
-    private class RemoteDataTask extends AsyncTask<Void, Void, List<Person>> {
+    private class RemoteDataTask extends AsyncTask<Void, Void, List<PersonDto>> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
 
         @Override
-        protected List<Person> doInBackground(Void... params) {
+        protected List<PersonDto> doInBackground(Void... params) {
 
 
             return personDatabaseHandler.getAllContacts();
         }
 
         @Override
-        protected void onPostExecute(List<Person> dataArrayList) {
+        protected void onPostExecute(List<PersonDto> dataArrayList) {
             MyAdapter adapter = new MyAdapter(dataArrayList, DeletePersonActivity.this);
-            adapter.notifyDataSetChanged();
+           mRecyclerView.setAdapter(adapter);
 
 
 
@@ -62,10 +65,10 @@ public class DeletePersonActivity extends Activity {
     }
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-        private List<Person> itemsData;
+        private List<PersonDto> itemsData;
         Context context;
 
-        public MyAdapter(List<Person> itemsData, Context context) {
+        public MyAdapter(List<PersonDto> itemsData, Context context) {
 
             this.context = context;
             this.itemsData = itemsData;

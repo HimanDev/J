@@ -1,17 +1,29 @@
-package com.example.himan.videotest;
+package com.example.himan.videotest.repository;
 
 /**
  * Created by himan on 29/7/16.
  */
-public class Person {
-    public Person(int id, String name, String phone,String code, String email) {
+public class PersonDto {
+
+    public static final String TABLE_CONTACTS = "person";
+
+    // Contacts Table Columns names
+    public static final String KEY_ID = "id";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_PH_NO = "phone";
+    public static final String KEY_E_MAIL = "email";
+    public static final String KEY_CODE = "code";
+
+
+
+    public PersonDto(int id, String name, String phone, String code, String email) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.code=code;
         this.email = email;
     }
-    public Person(String name, String phone, String code,String email) {
+    public PersonDto(String name, String phone, String code, String email) {
         this.name = name;
         this.phone = phone;
         this.code=code;
@@ -19,7 +31,7 @@ public class Person {
         this.email = email;
     }
 
-    public Person() {
+    public PersonDto() {
     }
 
     public int getId() {

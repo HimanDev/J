@@ -40,8 +40,18 @@ public class GoogleDriveFileInfo {
         applicationStopped = false;
     }
 
-    public GoogleDriveFileInfo() {
+    private GoogleDriveFileInfo() {
         applicationStopped = true;
+    }
+
+    /**
+     * This method is used to create add this object to notify the service
+     * as end of the drive file creation
+     *
+     * @return
+     */
+    public static GoogleDriveFileInfo createApplicationStoppedInfoObject(){
+        return new GoogleDriveFileInfo();
     }
 
     public static GoogleDriveFileInfo createFolderInfoObject(File file, String rFolderTypeKey){
