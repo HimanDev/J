@@ -75,7 +75,7 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
         checkPermission();
-        sharedPreferences=this.getPreferences(Context.MODE_PRIVATE);
+        sharedPreferences=this.getSharedPreferences(getString(R.string.PREFERENCE_FILE_KEY_GOOGLE),Context.MODE_PRIVATE);
         editor=sharedPreferences.edit();
 
 
@@ -191,7 +191,6 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
     @Override
     public void onStop(){
         super.onStop();
-        FolderStructure.getInstance().getQueue().add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
     }
 
     @Override
@@ -228,10 +227,11 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
                 .setBackOff(new ExponentialBackOff());
         getProfileInformation();
         createGDriveFolder();
-        new GoogleDriveOperator(this,mGoogleApiClient, mCredential).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
+//        new GoogleDriveOperator(this,mGoogleApiClient, mCredential).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
 
         FolderStructure.getInstance().setGoogleApiClient(mGoogleApiClient);
         FolderStructure.getInstance().setGoogleAccountCredential(mCredential);
+
         initialised = true;
     }
 

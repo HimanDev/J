@@ -236,4 +236,11 @@ public class AudioRecorderTest extends Activity
             mPlayer = null;
         }
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FolderStructure.getInstance().getQueue().add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+
+    }
 }

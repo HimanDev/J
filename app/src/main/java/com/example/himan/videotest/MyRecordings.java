@@ -42,6 +42,8 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -58,62 +60,14 @@ public class MyRecordings extends Activity {
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+
         setContentView(R.layout.my_recordings);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         imageViewClose = (ImageView) findViewById(R.id.imageViewClose);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(MyRecordings.this));
         new RemoteDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//runOnUiThread(new Runnable() {
-//    @Override
-//    public void run() {
-//        ArrayList<Data> dataArrayList = new ArrayList<>();
-//        File rootVideoFolder = FolderStructure.getInstance().getRootVideoFolder();
-//        File[] files=rootVideoFolder.listFiles();
-//        for (File file:files){
-//            if(file.isDirectory() && file.list().length>0){
-//                for (File videoFiles:file.listFiles()){
-//                    dataArrayList.add(new Data(file.getName(),videoFiles.getAbsolutePath()));
-//                    break;
-//                }
-//            }
-//        }
-//        adapter=new MyAdapter(dataArrayList,getApplicationContext());
-//        mRecyclerView.setAdapter(adapter);
-//    }
-//});
 
-
-
-     /* Needle.onMainThread().execute(new Runnable() {
-            @Override
-            public void run() {
-                // e.g. change one of the views
-
-                ArrayList<Data> dataArrayList = new ArrayList<>();
-                File rootVideoFolader = FolderStructure.getInstance().getRootVideoFolader();
-                File[] files=rootVideoFolader.listFiles();
-                for (File file:files){
-                    if(file.isDirectory() && file.list().length>0){
-                        for (File videoFiles:file.listFiles()){
-                            dataArrayList.add(new Data(file.getName(),videoFiles.getAbsolutePath()));
-                            break;
-                        }
-                    }
-                }
-
-//            File[] files = f.listFiles();
-//            for (File inFile : files) {
-//                if (!inFile.isDirectory()) {
-//                    dataArrayList.add(new Data(inFile.getName(), inFile.getAbsolutePath()));
-//                }
-//            }
-                adapter = new MyAdapter(dataArrayList, MyRecordings.this);
-                mRecyclerView.setAdapter(adapter);
-
-            }
-        });*/
-//        new RemoteDataTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         imageViewClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,11 +91,22 @@ public class MyRecordings extends Activity {
             for (File file : files) {
                 if (file.isDirectory() && file.list().length > 0) {
                     for (File videoFiles : file.listFiles()) {
-                        dataArrayList.add(new Data(file.getName(), videoFiles.getAbsolutePath(), file.getAbsolutePath()));
+                        dataArrayList.add(new Data(file.getName(), videoFiles.getAbsolutePath(), file.getAbsolutePath(),new Date(file.lastModified())));
                         break;
                     }
                 }
             }
+
+            File rootAudioFolder = FolderStructure.getInstance().getRootAudioFolder();
+            File[] filesAudio = rootAudioFolder.listFiles();
+            for (File file : filesAudio) {
+                if (file.isDirectory() && file.list().length > 0) {
+                        dataArrayList.add(new Data(file.getName(), null, file.getAbsolutePath(),new Date(file.lastModified())));
+
+                }
+            }
+            Collections.sort(dataArrayList,new DataComparatoor());
+            Collections.reverse(dataArrayList);
 
             Log.i("Remote", getStatus().name());
             return dataArrayList;
@@ -201,7 +166,7 @@ public class MyRecordings extends Activity {
                     DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
                     if (driveResourceDto != null)
 //                        if (driveResourceDto.getLink() != null) {
-                        new GetResourceId().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,driveResourceDto.getDriveId());
+                        new GetResourceId().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, driveResourceDto.getDriveId());
 //                        } else {
 
 //                        }
@@ -211,7 +176,12 @@ public class MyRecordings extends Activity {
 
                 }
             });
-            new BitmapWorkerTask(viewHolder.imageViewThumbnails, itemsData.get(position).fileUrl).execute();
+            if(itemsData.get(position).fileUrl!=null){
+                new BitmapWorkerTask(viewHolder.imageViewThumbnails, itemsData.get(position).fileUrl).execute();
+
+            }else {
+                viewHolder.imageViewThumbnails.setImageResource(R.drawable.musical_note);
+            }
 //            Bitmap bMap = ThumbnailUtils.createVideoThumbnail(itemsData.get(position).fileUrl, MediaStore.Video.Thumbnails.MICRO_KIND);
 //            BitmapDrawable background = new BitmapDrawable(getResources(),bMap);
 //            viewHolder.linearLayoutThumbnail.setBackgroundDrawable(background);
@@ -371,6 +341,16 @@ public class MyRecordings extends Activity {
     private class Data {
         private String name;
 
+        public Date getLastModifyAt() {
+            return lastModifyAt;
+        }
+
+        public void setLastModifyAt(Date lastModifyAt) {
+            this.lastModifyAt = lastModifyAt;
+        }
+
+        private Date lastModifyAt;
+
         public String getFolderLocation() {
             return folderLocation;
         }
@@ -404,10 +384,11 @@ public class MyRecordings extends Activity {
         public Data() {
         }
 
-        public Data(String name, String fileUrl, String folderLocation) {
+        public Data(String name, String fileUrl, String folderLocation,Date lastModifyAt) {
             this.name = name;
             this.fileUrl = fileUrl;
             this.folderLocation = folderLocation;
+            this.lastModifyAt=lastModifyAt;
         }
 
         public String getName() {
@@ -418,6 +399,18 @@ public class MyRecordings extends Activity {
             this.name = name;
         }
     }
+    private class DataComparatoor implements Comparator<Data>{
+
+        @Override
+        public int compare(Data lhs, Data rhs) {
+            if(lhs.getLastModifyAt().compareTo(rhs.getLastModifyAt())<1){
+
+            }
+            return  lhs.getLastModifyAt().compareTo(rhs.getLastModifyAt());
+
+        }
+    }
+
 
 //    @Override
 //    public void onWindowFocusChanged(boolean hasFocus) {

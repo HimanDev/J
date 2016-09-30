@@ -8,6 +8,8 @@
     <string name="permission_request">This sample needs permission for camera and audio recording.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 
+    <!--shared preferences file key-->
+    <string name="PREFERENCE_FILE_KEY_GOOGLE">com.example.himan.videotest.PREFERENCE_FILE_KEY</string>
     <!--shared preferences key-->
     <string name="App_Folder_Name">SafeApp</string>
     <string name="App_Folder_Drive_Id">SafeAppDriveId</string>

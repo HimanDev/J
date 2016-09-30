@@ -18,7 +18,6 @@ package com.example.himan.videotest;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 
 public class CameraActivity extends Activity {
 
@@ -28,7 +27,7 @@ public class CameraActivity extends Activity {
         setContentView(R.layout.activity_camera);
         if (null == savedInstanceState) {
             getFragmentManager().beginTransaction()
-                    .replace(R.id.container, Camera2VideoFragment.newInstance())
+                    .replace(R.id.container, RecordVideoFragment.newInstance())
                     .commit();
         }
 

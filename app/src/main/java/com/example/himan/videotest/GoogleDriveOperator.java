@@ -45,14 +45,14 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
     private com.google.api.services.drive.Drive driveService = null;
     private final String TAG="GoogleDriveOperator";
     private static final int REQUEST_CODE_CREATOR = 2;
-    MainApp context;
+    Context context;
     SharedPreferences sharedPreferences;
 
 
-    public GoogleDriveOperator(MainApp context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
+    public GoogleDriveOperator(Context context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
         this.mGoogleApiClient = mGoogleApiClient;
         this.context = context;
-        this.sharedPreferences = context.getPreferences(Context.MODE_PRIVATE);
+        this.sharedPreferences = context.getSharedPreferences(context.getString(R.string.PREFERENCE_FILE_KEY_GOOGLE),Context.MODE_PRIVATE);
         initGoogleDriveRestApi(mCredential);
     }
 
@@ -68,7 +68,7 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
             driveService.files().list().execute();
         }
         catch(UserRecoverableAuthIOException e){
-            context.startActivityForResult(e.getIntent(), context.REQUEST_AUTHORIZATION);
+//            context.startActivityForResult(e.getIntent(), context.REQUEST_AUTHORIZATION);
         }
         catch(IOException e){
             Log.i(TAG,e.getMessage());
@@ -208,8 +208,8 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
                     String link = mdRslt.getMetadata().getAlternateLink();
                     Log.i(TAG, "ALTERNATE link = " + link);
                     String fileName = mdRslt.getMetadata().getOriginalFilename();
-                    DriveResourceDto driveResource = new DriveResourceDto( fileName, driveId.encodeToString(), resourceId, link);
-                    new DriveResourceRepo().updateDriveResource(driveResource);
+//                    DriveResourceDto driveResource = new DriveResourceDto( fileName, driveId.encodeToString(), resourceId, link);
+//                    new DriveResourceRepo().updateDriveResource(driveResource);
                 }
             }
         };
@@ -230,7 +230,7 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
             driveId.asDriveFolder().getMetadata(mGoogleApiClient).setResultCallback(metadataRetrievedCallback);
         }
         catch(UserRecoverableAuthIOException e){
-            context.startActivityForResult(e.getIntent(), context.REQUEST_AUTHORIZATION);
+//            context.startActivityForResult(e.getIntent(), context.REQUEST_AUTHORIZATION);
         }
         catch (IOException e) {
             Log.i(TAG, e.getMessage());
