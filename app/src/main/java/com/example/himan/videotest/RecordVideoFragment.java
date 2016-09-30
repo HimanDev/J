@@ -293,7 +293,7 @@ public class RecordVideoFragment extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        new GoogleDriveOperator(null,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
+        new GoogleDriveOperator(getActivity().getApplicationContext(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
 
 
     }
