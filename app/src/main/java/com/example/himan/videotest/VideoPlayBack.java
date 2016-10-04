@@ -1,12 +1,14 @@
 package com.example.himan.videotest;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -26,6 +28,9 @@ public class VideoPlayBack extends Activity {
     TextView playlistTextView;
     private int size=0;
     private String folderLocation;
+    private FolderType folderType;
+    private ImageView audioImageView;
+    VideoView vdos;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -33,10 +38,25 @@ public class VideoPlayBack extends Activity {
 
         setContentView(R.layout.video_playback);
         playlistTextView=(TextView)findViewById(R.id.playlist);
+        audioImageView=(ImageView)findViewById(R.id.audioImageView);
+        vdos=(VideoView) findViewById(R.id.videoView);
+
         link=new LinkedList<>();
-        Bundle extras = getIntent().getExtras();
+        Intent extras = getIntent();
         if (extras != null) {
-            folderLocation = extras.getString("folderLocation");
+            folderLocation = extras.getStringExtra("folderLocation");
+//            folderType=(FolderType)extras.getSerializableExtra("folderType");
+//            if(folderType.equals(FolderType.AUDIO)){
+//                audioImageView.setVisibility(View.VISIBLE);
+//                vdos.setVisibility(View.INVISIBLE);
+//
+//            }
+//            else {
+//                vdos.setVisibility(View.VISIBLE);
+//                audioImageView.setVisibility(View.VISIBLE);
+//
+//
+//            }
             //The key argument here must match that used in the other activity
         }
         //declare linklist globally
@@ -44,7 +64,7 @@ public class VideoPlayBack extends Activity {
         File[] list = file.listFiles();
         for (File f : list) {
             String name = f.getName();
-            if (name.endsWith(".mp4"))
+//            if (name.endsWith(".mp4"))
             link.add(file.getAbsolutePath()+"/"+name);
         }
 
@@ -70,7 +90,6 @@ startvideo();
         };
 //        View mMediaControllerView = (View)findViewById(R.id.mediaController);
 
-        VideoView vdos=(VideoView) findViewById(R.id.videoView);
         //nakli
         controller.setAnchorView(vdos);
         controller.setMediaPlayer(vdos);

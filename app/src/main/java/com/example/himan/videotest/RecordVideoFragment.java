@@ -289,12 +289,25 @@ public class RecordVideoFragment extends Fragment
             return choices[0];
         }
     }
+    private GoogleDriveOperator googleDriveOperator;
 
     @Override
     public void onStart() {
         super.onStart();
-        new GoogleDriveOperator(getActivity().getApplicationContext(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
+//          new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
 
+        googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
+
+
+    }
+
+    @Override
+    public void onStop () {
+        super.onStop();
+        if(mNextVideoAbsolutePath!=null && mNextVideoAbsolutePath!=""){
+            queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
+            queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+        }
 
     }
 
@@ -322,8 +335,8 @@ public class RecordVideoFragment extends Fragment
                 public boolean onDoubleTap(MotionEvent e) {
                     WindowManager.LayoutParams lp = getActivity().getWindow().getAttributes();
                     lp.screenBrightness = 1.0f;
-                    lp.dimAmount=1.0f;
-                    lp.alpha=1.0f;
+                    lp.dimAmount = 1.0f;
+                    lp.alpha = 1.0f;
                     getActivity().getWindow().setAttributes(lp);
                     return super.onDoubleTap(e);
                 }
@@ -357,6 +370,8 @@ public class RecordVideoFragment extends Fragment
     public void onPause() {
         closeCamera();
         stopBackgroundThread();
+       /* queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
+        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());*/
         super.onPause();
     }
 
@@ -382,6 +397,8 @@ public class RecordVideoFragment extends Fragment
             }
             case R.id.closeAppimageView:
                this.getActivity().finish();
+                queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
+                queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
         }
     }
 
@@ -661,7 +678,7 @@ public class RecordVideoFragment extends Fragment
 
 //        }
         mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
-        mMediaRecorder.setMaxDuration(5000); // Set max duration 60 sec.
+        mMediaRecorder.setMaxDuration(25000); // Set max duration 60 sec.
 
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);

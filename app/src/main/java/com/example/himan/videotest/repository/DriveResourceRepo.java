@@ -11,19 +11,7 @@ import com.example.himan.videotest.dbhelper.DatabaseManager;
  */
 public class DriveResourceRepo  {
 
-    private static final int DATABASE_VERSION = 4;
 
-    // Database Name
-//    private static final String DATABASE_NAME = "SafeApp";
-//
-//    // Contacts table name
-//    private static final String TABLE_DRIVE_RESOURCE = "drive_resource";
-//
-//    private static final String KEY_ID = "id";
-//    private static final String KEY_FOLDER_NAME = "folder_name";
-//    private static final String KEY_DRIVE_ID = "drive_id";
-//    private static final String KEY_RESOURCE_ID = "resource_id";
-//    private static final String KEY_LINK = "link";
 
 
     private DriveResourceDto dbDriveResource;
@@ -78,13 +66,14 @@ public class DriveResourceRepo  {
         SQLiteDatabase db = DatabaseManager.getInstance().openDatabase();
 
 
-            ContentValues values = new ContentValues();
-            values.put(DriveResourceDto.KEY_LINK, driveResource.getLink()); // Contact Name
-            values.put(DriveResourceDto.KEY_RESOURCE_ID, driveResource.getResourceId()); // Contact Phone Number
-        values.put(DriveResourceDto.KEY_DRIVE_ID,driveResource.getDriveId()); // Contact Phone Number
-
-            // Inserting Row
-            db.update(DriveResourceDto.TABLE_DRIVE_RESOURCE, values, DriveResourceDto.KEY_FOLDER_NAME+"="+driveResource.getFolderName(), null);
+//            ContentValues values = new ContentValues();
+//            values.put(DriveResourceDto.KEY_LINK, driveResource.getLink()); // Contact Name
+//            values.put(DriveResourceDto.KEY_RESOURCE_ID, driveResource.getResourceId()); // Contact Phone Number
+//        values.put(DriveResourceDto.KEY_DRIVE_ID,driveResource.getDriveId()); // Contact Phone Number
+//
+//            // Inserting Row
+//            db.update(DriveResourceDto.TABLE_DRIVE_RESOURCE, values, DriveResourceDto.KEY_FOLDER_NAME+"="+driveResource.getFolderName(), null);
+        db.execSQL("UPDATE "+DriveResourceDto.TABLE_DRIVE_RESOURCE+" SET "+DriveResourceDto.KEY_LINK+"='"+driveResource.getLink()+"' WHERE "+DriveResourceDto.KEY_FOLDER_NAME+"="+driveResource.getFolderName());
            DatabaseManager.getInstance().closeDatabase(); // Closing database connection
 
 

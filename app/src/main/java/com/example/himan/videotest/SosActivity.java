@@ -31,6 +31,7 @@ public class SosActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
         personDatabaseHandler=new PersonDatabaseRepo();
         setContentView(R.layout.sos);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);

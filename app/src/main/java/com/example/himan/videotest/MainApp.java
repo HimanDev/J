@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.drive.Drive;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import com.google.android.gms.drive.DriveFolder;
@@ -35,7 +36,10 @@ import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.plus.Plus;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.DriveScopes;
 
@@ -227,10 +231,17 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
                 .setBackOff(new ExponentialBackOff());
         getProfileInformation();
         createGDriveFolder();
+        com.google.api.services.drive.Drive driveService = new com.google.api.services.drive.Drive.Builder(
+                AndroidHttp.newCompatibleTransport(), JacksonFactory.getDefaultInstance(), mCredential)
+                .setApplicationName("SafeApp")
+                .build();
 //        new GoogleDriveOperator(this,mGoogleApiClient, mCredential).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
 
         FolderStructure.getInstance().setGoogleApiClient(mGoogleApiClient);
         FolderStructure.getInstance().setGoogleAccountCredential(mCredential);
+        FolderStructure.getInstance().setRestApiDriveService(driveService);
+
+        new DriveRestApiPermission(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         initialised = true;
     }
@@ -319,7 +330,6 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
     }
 
     private void createGDriveSubFolder(DriveId parentDriveId, String title, final String  rDriveIdKey, boolean canExist) {
-
         if(canExist){
             String driveIdKey = sharedPreferences.getString(rDriveIdKey,null);
             try {
@@ -361,8 +371,36 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
                     Manifest.permission.INTERNET,
                     Manifest.permission.ACCESS_NETWORK_STATE,
                     Manifest.permission.GET_ACCOUNTS},MY_PERMISSIONS_REQUEST_READ_STORAGE);
-
         }
     }
 
+    /**
+     * This class is used to just ask for google drive permission.
+     *
+     */
+    private class DriveRestApiPermission extends AsyncTask<Void, Void, Void> {
+
+        private Activity activity = null;
+
+        DriveRestApiPermission(Activity activity){
+            this.activity = activity;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try{
+                com.google.api.services.drive.Drive driveService = FolderStructure.getInstance().getRestApiDriveService();
+                com.google.api.services.drive.model.FileList fileList = driveService.files().list().execute();
+                fileList.toString();
+            }
+            catch(UserRecoverableAuthIOException e){
+                activity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+            }
+            catch(IOException e){
+                Log.i(TAG,e.getMessage());
+            }
+
+            return null;
+        }
+    }
 }

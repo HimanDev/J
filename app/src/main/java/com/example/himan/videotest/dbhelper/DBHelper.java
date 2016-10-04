@@ -17,7 +17,7 @@ import com.example.himan.videotest.repository.PersonDto;
  */
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION =5;
+    private static final int DATABASE_VERSION =9;
     // Database Name
     private static final String DATABASE_NAME = "safeapp.db";
     private static final String TAG = DBHelper.class.getSimpleName().toString();
@@ -38,6 +38,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + DriveResourceDto.TABLE_DRIVE_RESOURCE);
         db.execSQL("DROP TABLE IF EXISTS " + PersonDto.TABLE_CONTACTS);
+        onCreate(db);
 
     }
+
 }

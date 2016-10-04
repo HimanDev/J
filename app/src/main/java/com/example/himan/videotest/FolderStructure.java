@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.services.drive.Drive;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,8 @@ public class FolderStructure {
     //
     private GoogleApiClient googleApiClient;
     private GoogleAccountCredential googleAccountCredential;
+
+    private com.google.api.services.drive.Drive restApiDriveService = null;
 
 
     private BlockingQueue<GoogleDriveFileInfo> queue = new LinkedBlockingQueue<>();
@@ -151,5 +154,12 @@ public class FolderStructure {
         this.googleAccountCredential = googleAccountCredential;
     }
 
+    public Drive getRestApiDriveService() {
+        return restApiDriveService;
+    }
+
+    public void setRestApiDriveService(Drive restApiDriveService) {
+        this.restApiDriveService = restApiDriveService;
+    }
 
 }

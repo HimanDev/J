@@ -2,6 +2,7 @@ package com.example.himan.videotest;
 
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.os.Bundle;
@@ -171,6 +172,7 @@ public class AudioRecorderTest extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         mRecorder = new MediaRecorder();
+        new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
         newAudioFolder  = FolderStructure.getInstance().createNewAudioFolder();
         queue = FolderStructure.getInstance().getQueue();
         queue.add(GoogleDriveFileInfo.createFolderInfoObject(newAudioFolder, getString(R.string.Audio_Folder_Drive_Id)));
@@ -226,6 +228,8 @@ public class AudioRecorderTest extends Activity
     @Override
     public void onPause() {
         super.onPause();
+        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
+        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
         if (mRecorder != null) {
             mRecorder.release();
             mRecorder = null;
@@ -240,7 +244,7 @@ public class AudioRecorderTest extends Activity
     @Override
     protected void onStop() {
         super.onStop();
-        FolderStructure.getInstance().getQueue().add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
-
+        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
+        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
     }
 }

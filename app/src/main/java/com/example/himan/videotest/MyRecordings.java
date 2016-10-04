@@ -91,7 +91,7 @@ public class MyRecordings extends Activity {
             for (File file : files) {
                 if (file.isDirectory() && file.list().length > 0) {
                     for (File videoFiles : file.listFiles()) {
-                        dataArrayList.add(new Data(file.getName(), videoFiles.getAbsolutePath(), file.getAbsolutePath(),new Date(file.lastModified())));
+                        dataArrayList.add(new Data(file.getName(), videoFiles.getAbsolutePath(), file.getAbsolutePath(),new Date(file.lastModified()),FolderType.VIDEO));
                         break;
                     }
                 }
@@ -101,7 +101,7 @@ public class MyRecordings extends Activity {
             File[] filesAudio = rootAudioFolder.listFiles();
             for (File file : filesAudio) {
                 if (file.isDirectory() && file.list().length > 0) {
-                        dataArrayList.add(new Data(file.getName(), null, file.getAbsolutePath(),new Date(file.lastModified())));
+                        dataArrayList.add(new Data(file.getName(), null, file.getAbsolutePath(),new Date(file.lastModified()),FolderType.AUDIO));
 
                 }
             }
@@ -155,6 +155,7 @@ public class MyRecordings extends Activity {
                 public void onClick(View v) {
                     Intent intent = new Intent(MyRecordings.this, VideoPlayBack.class);
                     intent.putExtra("folderLocation", itemsData.get(position).getFolderLocation());
+                    intent.putExtra("folderType",itemsData.get(position).getFolderType());
                     startActivity(intent);
                     overridePendingTransition(R.anim.push_left, R.anim.push_right);
 
@@ -163,21 +164,19 @@ public class MyRecordings extends Activity {
             viewHolder.shareImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
+                  final  DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
                     if (driveResourceDto != null)
-//                        if (driveResourceDto.getLink() != null) {
-                        new GetResourceId().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, driveResourceDto.getDriveId());
-//                        } else {
+                        if (driveResourceDto.getLink() == null || !driveResourceDto.getLink().equals("")) {
+                        new GetResourceId(driveResourceDto).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        } else {
+                        shareTextUrl(driveResourceDto.getLink());
+                        }
 
-//                        }
-                    {
-
-                    }
 
                 }
             });
             if(itemsData.get(position).fileUrl!=null){
-                new BitmapWorkerTask(viewHolder.imageViewThumbnails, itemsData.get(position).fileUrl).execute();
+                new BitmapWorkerTask(viewHolder.imageViewThumbnails, itemsData.get(position).fileUrl).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }else {
                 viewHolder.imageViewThumbnails.setImageResource(R.drawable.musical_note);
@@ -188,18 +187,23 @@ public class MyRecordings extends Activity {
 
         }
 
-        private class GetResourceId extends AsyncTask<String, Void, String> {
+        private class GetResourceId extends AsyncTask<Void, Void, String> {
 
             private String resourceId = null;
             private boolean changeListenerExecuted = false;
             private boolean syncExecuted = false;
             private final static String LINK_APPEND_RESOURCE_ID = "https://drive.google.com/open?id=";
+            private  DriveResourceDto driveResourceDto;
+
+            public GetResourceId(DriveResourceDto driveResourceDto) {
+                this.driveResourceDto = driveResourceDto;
+            }
 
 
             @Override
-            protected String doInBackground(final String... params) {
+            protected String doInBackground(Void...params) {
 
-                DriveId driveFolderId = DriveId.decodeFromString(params[0]);
+                DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
                 if (driveFolderId == null) {
                     //show pop up file not found on the location in the google drive,
                     //might be deleted manually
@@ -221,14 +225,14 @@ public class MyRecordings extends Activity {
                     @Override
                     public void onResult(@NonNull com.google.android.gms.common.api.Status status) {
                         if (status.isSuccess()) {
-                            DriveId driveFolderId = DriveId.decodeFromString(params[0]);
+                            DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
                             if (driveFolderId != null && driveFolderId.getResourceId() != null && !driveFolderId.equals("")) {
                                 resourceId = driveFolderId.getResourceId();
                             }
                         }
                     }
                 });
-                while (!changeListenerExecuted && !syncExecuted) {
+                do {
                     try {
                         Thread.sleep(2000);
                         if (resourceId != null) {
@@ -236,10 +240,10 @@ public class MyRecordings extends Activity {
                             return LINK_APPEND_RESOURCE_ID + resourceId;
                         }
                     } catch (InterruptedException e) {
-
+                        Log.e(this.getClass().getName(), "Thread interrupted exception");
                     }
 
-                }
+                } while(!changeListenerExecuted && !syncExecuted);
                 return resourceId;
             }
 
@@ -251,10 +255,7 @@ public class MyRecordings extends Activity {
                 if (!FolderStructure.getInstance().isNetworkAvailable(context)) {
                     return;
                 }
-                com.google.api.services.drive.Drive driveService = new com.google.api.services.drive.Drive.Builder(
-                        AndroidHttp.newCompatibleTransport(), JacksonFactory.getDefaultInstance(), FolderStructure.getInstance().getGoogleAccountCredential())
-                        .setApplicationName("SafeApp")
-                        .build();
+                com.google.api.services.drive.Drive driveService = FolderStructure.getInstance().getRestApiDriveService();
                 try {
                     Permission newPermission = new Permission();
                     newPermission.setType("anyone");
@@ -272,11 +273,16 @@ public class MyRecordings extends Activity {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
+                driveResourceDto.setLink(s);
+
+                shareTextUrl(s);
+                new DriveResourceRepo().updateDriveResource(driveResourceDto);
                 Log.d(TAG,s);
             }
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
+
 
             public TextView txtViewTitle;
             public LinearLayout linearLayoutThumbnail;
@@ -341,6 +347,16 @@ public class MyRecordings extends Activity {
     private class Data {
         private String name;
 
+        public FolderType getFolderType() {
+            return folderType;
+        }
+
+        public void setFolderType(FolderType folderType) {
+            this.folderType = folderType;
+        }
+
+        private FolderType folderType;
+
         public Date getLastModifyAt() {
             return lastModifyAt;
         }
@@ -384,11 +400,12 @@ public class MyRecordings extends Activity {
         public Data() {
         }
 
-        public Data(String name, String fileUrl, String folderLocation,Date lastModifyAt) {
+        public Data(String name, String fileUrl, String folderLocation,Date lastModifyAt,FolderType folderType) {
             this.name = name;
             this.fileUrl = fileUrl;
             this.folderLocation = folderLocation;
             this.lastModifyAt=lastModifyAt;
+            this.folderType=folderType;
         }
 
         public String getName() {
@@ -426,5 +443,19 @@ public class MyRecordings extends Activity {
 //                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 //        }
 //    }
+
+    private void shareTextUrl(String url) {
+        Intent share = new Intent(android.content.Intent.ACTION_SEND);
+        share.setType("text/plain");
+        share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+        // Add data to the intent, the receiving app will decide
+        // what to do with it.
+        share.putExtra(Intent.EXTRA_SUBJECT, "Help me SOS");
+        share.putExtra(Intent.EXTRA_TEXT, url);
+
+        startActivity(Intent.createChooser(share, "Share link!"));
+    }
+
 
 }

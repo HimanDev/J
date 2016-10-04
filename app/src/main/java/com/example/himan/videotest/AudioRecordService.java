@@ -3,6 +3,7 @@ package com.example.himan.videotest;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.IBinder;
@@ -108,7 +109,8 @@ public class AudioRecordService extends Service {
     public void onDestroy() {
 
         isRunning = false;
-
+        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
+        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
         Log.i(TAG, "Service onDestroy");
     }
 
@@ -117,7 +119,7 @@ public class AudioRecordService extends Service {
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mNextAudioAbsolutePath = FolderStructure.getInstance().getAudioLocation(newAudioFolder);
         mRecorder.setOutputFile(mNextAudioAbsolutePath);
-        mRecorder.setMaxDuration(5000);
+        mRecorder.setMaxDuration(10000);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {

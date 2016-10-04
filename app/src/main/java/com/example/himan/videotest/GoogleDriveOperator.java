@@ -1,5 +1,6 @@
 package com.example.himan.videotest;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -35,7 +36,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Created by DPandey on 23-07-2016.
  */
-public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFileInfo>,Void,Boolean> {
+public class GoogleDriveOperator {
 
     private Exception exception;
     private GoogleApiClient mGoogleApiClient;
@@ -45,11 +46,12 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
     private com.google.api.services.drive.Drive driveService = null;
     private final String TAG="GoogleDriveOperator";
     private static final int REQUEST_CODE_CREATOR = 2;
-    Context context;
+    Activity context;
     SharedPreferences sharedPreferences;
+    static final int REQUEST_AUTHORIZATION = 1001;
 
 
-    public GoogleDriveOperator(Context context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
+    public GoogleDriveOperator(Activity context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
         this.mGoogleApiClient = mGoogleApiClient;
         this.context = context;
         this.sharedPreferences = context.getSharedPreferences(context.getString(R.string.PREFERENCE_FILE_KEY_GOOGLE),Context.MODE_PRIVATE);
@@ -57,34 +59,33 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
     }
 
     private void initGoogleDriveRestApi(GoogleAccountCredential mCredential){
-        this.driveService = new com.google.api.services.drive.Drive.Builder(
-                AndroidHttp.newCompatibleTransport(), JacksonFactory.getDefaultInstance(), mCredential)
-                .setApplicationName("SafeApp")
-                .build();
+        this.driveService = FolderStructure.getInstance().getRestApiDriveService();
     }
 
-    protected Boolean doInBackground(BlockingQueue<GoogleDriveFileInfo>... queues) {
+    protected Boolean doInBackground(GoogleDriveFileInfo googleDriveFileInfo) {
         try{
             driveService.files().list().execute();
         }
         catch(UserRecoverableAuthIOException e){
-//            context.startActivityForResult(e.getIntent(), context.REQUEST_AUTHORIZATION);
+            context.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
         }
         catch(IOException e){
             Log.i(TAG,e.getMessage());
         }
-        BlockingQueue<GoogleDriveFileInfo> blockingQueue = queues[0];
         try {
-            while (true) {
+//            while (true) {
 
-                GoogleDriveFileInfo driveFileInfo = blockingQueue.take();
+                GoogleDriveFileInfo driveFileInfo = googleDriveFileInfo;
                 if (driveFileInfo.isApplicationStopped()) {
-                    break;
+                    if(resourceId!=null){
+                        allowSharePermission(null);
+                    }
+//                    break;
                 }
                 saveFileToDrive(driveFileInfo);
-            }
+//            }
         }
-        catch (InterruptedException e){
+        catch (Exception e){
 
         }
         return true;
@@ -119,7 +120,7 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
                             try {
                                 fis = new FileInputStream(file.getAbsolutePath());
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                byte[] buf = new byte[(int) file.length()];
+                                byte[] buf = new byte[(int) 1024];
                                 int n;
                                 while (-1 != (n = fis.read(buf)))
                                     baos.write(buf, 0, n);
@@ -169,8 +170,9 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
                                 @Override
                                 public void onResult(DriveFolder.DriveFolderResult driveFolderResult) {
                                     driveId = driveFolderResult.getDriveFolder().getDriveId();
-//                                    DriveResourceDto driveResource = new DriveResourceDto( title, driveId.encodeToString());
-//                                    new DriveResourceRepo().addDriveResource(driveResource);
+                                    final DriveResourceDto driveResource = new DriveResourceDto( title, driveId.encodeToString());
+                                    final DriveResourceRepo dbResource = new DriveResourceRepo();
+                                    dbResource.addDriveResource(driveResource);
                                     if(!FolderStructure.getInstance().isNetworkAvailable(context)){
                                         return;
                                     }
@@ -184,14 +186,13 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
 
                                 }
                             });
-
-                            try {
-                                Thread.sleep(5000);
+                            /*try {
+                                Thread.sleep(20000);
                                 allowSharePermission(title);
-                            }
-                            catch (InterruptedException e) {
+                            } catch (InterruptedException e) {
                                 Log.i(TAG, e.getMessage());
-                            }
+                            }*/
+
 
                         }
 
@@ -208,8 +209,8 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
                     String link = mdRslt.getMetadata().getAlternateLink();
                     Log.i(TAG, "ALTERNATE link = " + link);
                     String fileName = mdRslt.getMetadata().getOriginalFilename();
-//                    DriveResourceDto driveResource = new DriveResourceDto( fileName, driveId.encodeToString(), resourceId, link);
-//                    new DriveResourceRepo().updateDriveResource(driveResource);
+                    DriveResourceDto driveResource = new DriveResourceDto( fileName, driveId.encodeToString(), resourceId, link);
+                    new DriveResourceRepo().updateDriveResource(driveResource);
                 }
             }
         };
@@ -227,10 +228,10 @@ public class GoogleDriveOperator extends AsyncTask<BlockingQueue<GoogleDriveFile
             newPermission.setType("anyone");
             newPermission.setRole("reader");
             Permission p = driveService.permissions().create(resourceId, newPermission).execute();
-            driveId.asDriveFolder().getMetadata(mGoogleApiClient).setResultCallback(metadataRetrievedCallback);
+           // driveId.asDriveFolder().getMetadata(mGoogleApiClient).setResultCallback(metadataRetrievedCallback);
         }
         catch(UserRecoverableAuthIOException e){
-//            context.startActivityForResult(e.getIntent(), context.REQUEST_AUTHORIZATION);
+           context.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
         }
         catch (IOException e) {
             Log.i(TAG, e.getMessage());
