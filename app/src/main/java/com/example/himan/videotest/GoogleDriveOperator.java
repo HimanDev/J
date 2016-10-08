@@ -164,7 +164,7 @@ public class GoogleDriveOperator {
                                 @Override
                                 public void onResult(DriveFolder.DriveFolderResult driveFolderResult) {
                                     driveId = driveFolderResult.getDriveFolder().getDriveId();
-                                    final DriveResourceDto driveResource = new DriveResourceDto( title, driveId.encodeToString());
+                                    final DriveResourceDto driveResource = new DriveResourceDto( title, driveId.encodeToString(),new GetLocation(context).getLocationUrl());
                                     final DriveResourceRepo dbResource = new DriveResourceRepo();
                                     dbResource.addDriveResource(driveResource);
                                     if(!FolderStructure.getInstance().isNetworkAvailable(context)){

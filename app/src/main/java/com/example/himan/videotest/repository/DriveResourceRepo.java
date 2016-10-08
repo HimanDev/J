@@ -22,7 +22,7 @@ public class DriveResourceRepo  {
     public static String createTable(){
         return "CREATE TABLE " + DriveResourceDto.TABLE_DRIVE_RESOURCE + "("
                 + DriveResourceDto.KEY_ID + " INTEGER PRIMARY KEY," + DriveResourceDto.KEY_FOLDER_NAME + " TEXT,"
-                + DriveResourceDto.KEY_DRIVE_ID + " TEXT," + DriveResourceDto.KEY_RESOURCE_ID+" TEXT," + DriveResourceDto.KEY_LINK+" TEXT)";
+                + DriveResourceDto.KEY_DRIVE_ID + " TEXT," + DriveResourceDto.KEY_RESOURCE_ID+" TEXT," + DriveResourceDto.KEY_LINK+" TEXT,"+DriveResourceDto.KEY_LOCATION+" TEXT)";
     }
 
 
@@ -37,6 +37,7 @@ public class DriveResourceRepo  {
         values.put(DriveResourceDto.KEY_DRIVE_ID, driveResource.getDriveId()); // Contact Phone Number
         values.put(DriveResourceDto.KEY_RESOURCE_ID, driveResource.getResourceId()); // Contact Phone Number
         values.put(DriveResourceDto.KEY_LINK, driveResource.getLink()); // Contact Phone Number
+        values.put(DriveResourceDto.KEY_LOCATION,driveResource.getLocation());
 
 
         // Inserting Row
@@ -56,7 +57,7 @@ public class DriveResourceRepo  {
             cursor.moveToFirst();
 
             DriveResourceDto driveResource = new DriveResourceDto(cursor.getString(cursor.getColumnIndex(DriveResourceDto.KEY_FOLDER_NAME)),cursor.getString(cursor.getColumnIndex(DriveResourceDto.KEY_DRIVE_ID)),
-                    cursor.getString(cursor.getColumnIndex(DriveResourceDto.KEY_LINK)),cursor.getString(cursor.getColumnIndex(DriveResourceDto.KEY_RESOURCE_ID)));
+                    cursor.getString(cursor.getColumnIndex(DriveResourceDto.KEY_LINK)),cursor.getString(cursor.getColumnIndex(DriveResourceDto.KEY_RESOURCE_ID)),cursor.getString(cursor.getColumnIndex(DriveResourceDto.KEY_LOCATION)));
             // return contact
             return driveResource;
         }
