@@ -190,8 +190,6 @@ public class MyRecordings extends Activity {
                             shareTextUrl(driveResourceDto.getLink());
                         }
                     }
-
-
                 }
             });
             if(itemsData.get(position).fileUrl!=null){
@@ -200,10 +198,6 @@ public class MyRecordings extends Activity {
             }else {
                 viewHolder.imageViewThumbnails.setImageResource(R.drawable.musical_note);
             }
-//            Bitmap bMap = ThumbnailUtils.createVideoThumbnail(itemsData.get(position).fileUrl, MediaStore.Video.Thumbnails.MICRO_KIND);
-//            BitmapDrawable background = new BitmapDrawable(getResources(),bMap);
-//            viewHolder.linearLayoutThumbnail.setBackgroundDrawable(background);
-
         }
 
         private void createResourceId(final DriveResourceDto driveResourceDto){
@@ -246,76 +240,6 @@ public class MyRecordings extends Activity {
                 String link = LINK_APPEND_RESOURCE_ID + resourceId;
                 driveResourceDto.setLink(link);
                 driveResourceDto.setResourceId(resourceId);
-                new DriveResourceRepo().updateDriveResource(driveResourceDto);
-            }
-        }
-
-        private class GetResourceId extends AsyncTask<Void, Void, String> {
-            private ProgressDialog dialog = new ProgressDialog(MyRecordings.this);
-
-            private String resourceId = null;
-            private boolean changeListenerExecuted = false;
-            private boolean syncExecuted = false;
-            private  DriveResourceDto driveResourceDto;
-
-            public GetResourceId(DriveResourceDto driveResourceDto) {
-                this.driveResourceDto = driveResourceDto;
-            }
-
-
-            @Override
-            protected String doInBackground(Void...params) {
-                DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
-
-                DriveFile file = Drive.DriveApi.getFile(FolderStructure.getInstance().getGoogleApiClient(), driveFolderId);
-                DriveResource.MetadataResult mdRslt = file.getMetadata(FolderStructure.getInstance().getGoogleApiClient()).await();
-                if (mdRslt != null && mdRslt.getStatus().isSuccess()) {
-                    String link = mdRslt.getMetadata().getWebContentLink();
-                    return  link;
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                this.dialog.setMessage("Please wait...");
-                this.dialog.show();
-            }
-
-            /**
-             * It gives share permission to current folder uploaded or current driveId object set
-             * in the driveId reference.
-             */
-            private void allowSharePermission() {
-                if (!FolderStructure.getInstance().isNetworkAvailable(context)) {
-                    return;
-                }
-                com.google.api.services.drive.Drive driveService = FolderStructure.getInstance().getRestApiDriveService();
-                try {
-                    Permission newPermission = new Permission();
-                    newPermission.setType("anyone");
-                    newPermission.setRole("reader");
-                    Permission p = driveService.permissions().create(resourceId, newPermission).execute();
-                } catch (UserRecoverableAuthIOException e) {
-                    // context.startActivityForResult(e.getIntent(), "1001");
-                } catch (IOException e) {
-                    Log.i(TAG, e.getMessage());
-                } catch (Exception e) {
-                    Log.i(TAG, e.getMessage());
-                }
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                if (dialog.isShowing()) {
-                    dialog.dismiss();
-                }
-                super.onPostExecute(s);
-                driveResourceDto.setLink(s);
-
-                shareTextUrl(s);
                 new DriveResourceRepo().updateDriveResource(driveResourceDto);
             }
         }

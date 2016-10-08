@@ -183,9 +183,7 @@ public class GoogleDriveOperator {
 
                                 }
                             });
-
                         }
-
                     }
                 });
 

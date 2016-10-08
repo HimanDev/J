@@ -30,6 +30,7 @@ public class AudioRecordService extends Service {
     public CountDownTimer countDownTimer;
     private static BlockingQueue<GoogleDriveFileInfo> queue;
     private String mNextAudioAbsolutePath;
+    private int NUMBER_OF_AUDIO = 0;
 
 
     @Override
@@ -117,7 +118,7 @@ public class AudioRecordService extends Service {
     private void startRecording() {
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mNextAudioAbsolutePath = FolderStructure.getInstance().getAudioLocation(newAudioFolder);
+        mNextAudioAbsolutePath = FolderStructure.getInstance().getAudioLocation(newAudioFolder, ++NUMBER_OF_AUDIO);
         mRecorder.setOutputFile(mNextAudioAbsolutePath);
         mRecorder.setMaxDuration(10000);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);

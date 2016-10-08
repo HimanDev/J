@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -15,7 +14,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -25,6 +23,7 @@ public class FolderStructure {
     private static final String ROOT_FOLDER_NAME = "MyCameraApp";
     private static final String VIDEO_FOLDER_NAME = "Videos";
     private static final String AUDIO_FOLDER_NAME = "Audios";
+    public static final String AUDIO_VIDEO_FILE_FORMAT = "dMMMyy@HH;mm;ss";
 
     //
     private GoogleApiClient googleApiClient;
@@ -84,33 +83,30 @@ public class FolderStructure {
     }
 
     public  File getCreateNewVideoFolder() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile = createFolder(videoFolder, "VIDEO_" + timeStamp);
+        String timeStamp = new SimpleDateFormat(AUDIO_VIDEO_FILE_FORMAT).format(new Date());
+        File mediaFile = createFolder(videoFolder, timeStamp);
         return mediaFile;
 
     }
 
-    public  String getVideoLocation(File videoFolder) {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        mediaFile = new File(videoFolder.getPath() + File.separator +
-                "VIDEO_" + timeStamp + ".mp4");
+    public  String getVideoLocation(File videoFolder, int count) {
+        File mediaFile = new File(videoFolder.getPath() + File.separator +
+                "Part_"+count + ".mp4");
         return mediaFile.getAbsolutePath();
 
     }
 
     public  File createNewAudioFolder() {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile = createFolder(audioFolder, "AUDIO_" + timeStamp);
+        String timeStamp = new SimpleDateFormat(AUDIO_VIDEO_FILE_FORMAT).format(new Date());
+        File mediaFile = createFolder(audioFolder, timeStamp);
         return mediaFile;
 
     }
 
-    public  String getAudioLocation(File audioFolder) {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        mediaFile = new File(audioFolder.getPath() + File.separator +
-                "AUDIO_" + timeStamp + ".3gp");
+    public  String getAudioLocation(File audioFolder, int count) {
+        //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File mediaFile = new File(audioFolder.getPath() + File.separator +
+                "Part_"+count + ".3gp");
         return mediaFile.getAbsolutePath();
 
     }

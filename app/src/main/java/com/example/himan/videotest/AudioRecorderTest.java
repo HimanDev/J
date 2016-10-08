@@ -33,12 +33,13 @@ public class AudioRecorderTest extends Activity
     private MediaPlayer   mPlayer = null;
     private static File newAudioFolder;
     private String mNextAudioAbsolutePath;
+    private int NUMBER_OF_AUDIO = 0;
 
 
     private void startRecording() {
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mNextAudioAbsolutePath = FolderStructure.getInstance().getAudioLocation(newAudioFolder);
+        mNextAudioAbsolutePath = FolderStructure.getInstance().getAudioLocation(newAudioFolder, ++NUMBER_OF_AUDIO);
         mRecorder.setOutputFile(mNextAudioAbsolutePath);
         mRecorder.setMaxDuration(5000);
         mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
@@ -71,8 +72,6 @@ public class AudioRecorderTest extends Activity
         mRecorder = new MediaRecorder();
        googleDriveOperator= new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
         newAudioFolder  = FolderStructure.getInstance().createNewAudioFolder();
-//        queue = FolderStructure.getInstance().getQueue();
-//        queue.add(GoogleDriveFileInfo.createFolderInfoObject(newAudioFolder, getString(R.string.Audio_Folder_Drive_Id)));
         new Thread(new Runnable() {
             public void run() {
                 googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFolderInfoObject(newAudioFolder, getString(R.string.Audio_Folder_Drive_Id)));
@@ -90,7 +89,6 @@ public class AudioRecorderTest extends Activity
             public void onInfo(MediaRecorder mr, int what, int extra) {
                 if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
                     Toast.makeText(AudioRecorderTest.this, "audio saved to "+mNextAudioAbsolutePath, Toast.LENGTH_SHORT).show();
-//                    queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "3gp"));
                     new Thread(new Runnable() {
                         public void run() {
                             googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "3gp"));
@@ -101,7 +99,6 @@ public class AudioRecorderTest extends Activity
                     startRecording();
                     // 5 000 ms - 5 s
                     // 300 000 ms - 5 min
-
                 }
 
             }
