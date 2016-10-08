@@ -14,12 +14,23 @@ public class DriveResourceDto {
     public static final String KEY_DRIVE_ID = "drive_id";
     public static final String KEY_RESOURCE_ID = "resource_id";
     public static final String KEY_LINK = "link";
+    public static final String KEY_LOCATION="location";
 
 
 
     private int id;
     private String folderName;
     private String driveId;
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    private String location;
 
     public DriveResourceDto() {
 
@@ -35,15 +46,16 @@ public class DriveResourceDto {
 
     private String link;
 
-    public DriveResourceDto(String folderName, String driveId, String link, String resourceId) {
+    public DriveResourceDto(String folderName, String driveId, String link, String resourceId,String location) {
         this.folderName = folderName;
         this.driveId = driveId;
         this.link = link;
         this.resourceId = resourceId;
+        this.location=location;
     }
 
-    public DriveResourceDto(String folderName, String driveId) {
-        this(folderName, driveId, null, null);
+    public DriveResourceDto(String folderName, String driveId,String location) {
+        this(folderName, driveId, null, null,location);
     }
 
 
