@@ -4,6 +4,7 @@ package com.example.himan.videotest;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.view.WindowManager;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,71 +28,12 @@ import java.util.concurrent.BlockingQueue;
 public class AudioRecorderTest extends Activity
 {
     private static final String LOG_TAG = "AudioRecorderTest";
-    private static String mFileName = null;
 
     private MediaRecorder mRecorder = null;
     private MediaPlayer   mPlayer = null;
     private static File newAudioFolder;
-    private static BlockingQueue<GoogleDriveFileInfo> queue;
     private String mNextAudioAbsolutePath;
 
-//    private  String getOutputMediaFile(){
-//        // To be safe, you should check that the SDCard is mounted
-//        // using Environment.getExternalStorageState() before doing this.
-//
-//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-//        // This location works best if you want the created images to be shared
-//        // between applications and persist after your app has been uninstalled.
-//
-//        // Create the storage directory if it does not exist
-//        if (! mediaStorageDir.exists()){
-//            if (! mediaStorageDir.mkdirs()){
-//                Log.d("MyCameraApp", "failed to create directory");
-//                return null;
-//            }
-//        }
-//
-//        // Create a media file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        File mediaFile;
-//           mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-//                    "AUD_"+ timeStamp + ".3gp");
-//        Toast.makeText(AudioRecorderTest.this,mediaFile.getAbsolutePath(),Toast.LENGTH_SHORT).show();
-//        return mediaFile.getAbsolutePath();
-//    }
-
-    private void onRecord(boolean start) {
-        if (start) {
-            // startRecording();
-        } else {
-            stopRecording();
-        }
-    }
-
-//    private void onPlay(boolean start) {
-//        if (start) {
-//            startPlaying();
-//        } else {
-//            stopPlaying();
-//        }
-//    }
-
-//    private void startPlaying() {
-//        mPlayer = new MediaPlayer();
-//        try {
-//            mPlayer.setDataSource(mFileName);
-//            mPlayer.prepare();
-//            mPlayer.start();
-//        } catch (IOException e) {
-//            Log.e(LOG_TAG, "prepare() failed");
-//        }
-//    }
-
-//    private void stopPlaying() {
-//        mPlayer.release();
-//        mPlayer = null;
-//    }
 
     private void startRecording() {
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -108,83 +50,53 @@ public class AudioRecorderTest extends Activity
         }
 
         mRecorder.start();
+
     }
 
     private void stopRecording() {
         mRecorder.stop();
         mRecorder.reset();
-      //  mRecorder.release();
 
     }
 
-//    class RecordButton extends Button {
-//        boolean mStartRecording = true;
-//
-//        OnClickListener clicker = new OnClickListener() {
-//            public void onClick(View v) {
-//                onRecord(mStartRecording);
-//                if (mStartRecording) {
-//                    setText("Stop recording");
-//                } else {
-//                    setText("Start recording");
-//                }
-//                mStartRecording = !mStartRecording;
-//            }
-//        };
-//
-//        public RecordButton(Context ctx) {
-//            super(ctx);
-//            setText("Start recording");
-//            setOnClickListener(clicker);
-//        }
-//    }
-
-//    class PlayButton extends Button {
-//        boolean mStartPlaying = true;
-//
-//        OnClickListener clicker = new OnClickListener() {
-//            public void onClick(View v) {
-//                onPlay(mStartPlaying);
-//                if (mStartPlaying) {
-//                    setText("Stop playing");
-//                } else {
-//                    setText("Start playing");
-//                }
-//                mStartPlaying = !mStartPlaying;
-//            }
-//        };
-//
-//        public PlayButton(Context ctx) {
-//            super(ctx);
-//            setText("Start playing");
-//            setOnClickListener(clicker);
-//        }
-//    }
-
-//    public AudioRecorderTest() {
-//        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-//        mFileName += "/AudioRecorderTest.3gp";
-//    }
 
 
+
+    private GoogleDriveOperator googleDriveOperator;
+    private Chronometer chronometer;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         mRecorder = new MediaRecorder();
-        new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
+       googleDriveOperator= new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
         newAudioFolder  = FolderStructure.getInstance().createNewAudioFolder();
-        queue = FolderStructure.getInstance().getQueue();
-        queue.add(GoogleDriveFileInfo.createFolderInfoObject(newAudioFolder, getString(R.string.Audio_Folder_Drive_Id)));
+//        queue = FolderStructure.getInstance().getQueue();
+//        queue.add(GoogleDriveFileInfo.createFolderInfoObject(newAudioFolder, getString(R.string.Audio_Folder_Drive_Id)));
+        new Thread(new Runnable() {
+            public void run() {
+                googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFolderInfoObject(newAudioFolder, getString(R.string.Audio_Folder_Drive_Id)));
+
+            }
+        }).start();
+
 
         setContentView(R.layout.record_audio);
+        chronometer=(Chronometer)findViewById(R.id.chronometer);
         startRecording();
+        chronometer.start();
         mRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
             @Override
             public void onInfo(MediaRecorder mr, int what, int extra) {
                 if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
                     Toast.makeText(AudioRecorderTest.this, "audio saved to "+mNextAudioAbsolutePath, Toast.LENGTH_SHORT).show();
-                    queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "3gp"));
+//                    queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "3gp"));
+                    new Thread(new Runnable() {
+                        public void run() {
+                            googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "3gp"));
+
+                        }
+                    }).start();
                     stopRecording();
                     startRecording();
                     // 5 000 ms - 5 s
@@ -228,8 +140,8 @@ public class AudioRecorderTest extends Activity
     @Override
     public void onPause() {
         super.onPause();
-        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
-        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+//        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
+//        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
         if (mRecorder != null) {
             mRecorder.release();
             mRecorder = null;
@@ -244,7 +156,13 @@ public class AudioRecorderTest extends Activity
     @Override
     protected void onStop() {
         super.onStop();
-        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
-        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+//        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
+//        queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+        new Thread(new Runnable() {
+            public void run() {
+                googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFileInfoObject(new File(mNextAudioAbsolutePath), "mp4"));
+
+            }
+        }).start();
     }
 }

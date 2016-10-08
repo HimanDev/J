@@ -37,14 +37,12 @@
                     android:src="@drawable/flash_off"
                     android:visibility="gone" />
 
-                <TextView
+                <Chronometer
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="00:00:00"
-                    android:id="@+id/textView9"
-                    android:layout_weight=".3"
-                    android:gravity="center_vertical|center_horizontal" />
+                    android:id="@+id/chronometer"
+                    android:textColor="#ffffff"
+                    android:textSize="18dp" />
 
                 <ImageView
                     android:layout_width="58dp"

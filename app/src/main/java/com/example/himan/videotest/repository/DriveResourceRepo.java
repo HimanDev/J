@@ -73,7 +73,8 @@ public class DriveResourceRepo  {
 //
 //            // Inserting Row
 //            db.update(DriveResourceDto.TABLE_DRIVE_RESOURCE, values, DriveResourceDto.KEY_FOLDER_NAME+"="+driveResource.getFolderName(), null);
-        db.execSQL("UPDATE "+DriveResourceDto.TABLE_DRIVE_RESOURCE+" SET "+DriveResourceDto.KEY_LINK+"='"+driveResource.getLink()+"' WHERE "+DriveResourceDto.KEY_FOLDER_NAME+"="+driveResource.getFolderName());
+//        if(driveResource.getResourceId()=null)
+        db.execSQL("UPDATE "+DriveResourceDto.TABLE_DRIVE_RESOURCE+" SET "+DriveResourceDto.KEY_LINK+"='"+driveResource.getLink()+"',"+DriveResourceDto.KEY_RESOURCE_ID+"='"+driveResource.getResourceId()+"' WHERE "+DriveResourceDto.KEY_FOLDER_NAME+"='"+driveResource.getFolderName()+"';");
            DatabaseManager.getInstance().closeDatabase(); // Closing database connection
 
 

@@ -1,7 +1,9 @@
 package com.example.himan.videotest;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +31,9 @@ import com.example.himan.videotest.repository.DriveResourceRepo;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
+import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveId;
+import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.events.ChangeEvent;
 import com.google.android.gms.drive.events.ChangeListener;
 import com.google.android.gms.drive.internal.DriveServiceResponse;
@@ -55,6 +60,7 @@ public class MyRecordings extends Activity {
     private ImageView imageViewClose;
     private MyAdapter adapter;
     private static final String TAG = "MYREC";
+    private static final String LINK_APPEND_RESOURCE_ID = "https://drive.google.com/open?id=";
 
 
     @Override
@@ -165,12 +171,25 @@ public class MyRecordings extends Activity {
                 @Override
                 public void onClick(View v) {
                   final  DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
-                    if (driveResourceDto != null)
-                        if (driveResourceDto.getLink() == null || !driveResourceDto.getLink().equals("")) {
-                        new GetResourceId(driveResourceDto).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    if (driveResourceDto != null){
+                        if (driveResourceDto.getLink() == null) {
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    createResourceId(driveResourceDto);
+                                }
+                            }).start();
+
                         } else {
-                        shareTextUrl(driveResourceDto.getLink());
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                      allowSharePermission(driveResourceDto.getResourceId());
+                                }
+                            }).start();
+                            shareTextUrl(driveResourceDto.getLink());
                         }
+                    }
 
 
                 }
@@ -187,12 +206,56 @@ public class MyRecordings extends Activity {
 
         }
 
+        private void createResourceId(final DriveResourceDto driveResourceDto){
+            DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
+            if (driveFolderId == null) {
+                //show pop up file not found on the location in the google drive,
+                //might be deleted manually
+                return;
+            }
+            saveNewResourceIdIfCreated(driveResourceDto, driveFolderId.getResourceId());
+            driveFolderId.asDriveFolder().addChangeListener(FolderStructure.getInstance().getGoogleApiClient(), new ChangeListener() {
+                    @Override
+                    public void onChange(ChangeEvent event) {
+                        Log.d(TAG, "event: " + event + " resId: " + event.getDriveId().getResourceId());
+                      String resourceId = event.getDriveId().getResourceId();
+                        if(driveResourceDto.getResourceId() == null) {
+                            saveNewResourceIdIfCreated(driveResourceDto, resourceId);
+                        }
+                    }
+                });
+                Drive.DriveApi.requestSync(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<com.google.android.gms.common.api.Status>() {
+                    @Override
+                    public void onResult(@NonNull com.google.android.gms.common.api.Status status) {
+                        if (status.isSuccess()) {
+                            DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
+                            if (driveFolderId != null && driveFolderId.getResourceId() != null && !driveFolderId.equals("")) {
+                               String resourceId = driveFolderId.getResourceId();
+                                if(driveResourceDto.getResourceId() == null) {
+                                    saveNewResourceIdIfCreated(driveResourceDto, resourceId);
+                                }
+                            }
+                        }
+                    }
+                });
+        }
+
+        private void saveNewResourceIdIfCreated(final DriveResourceDto driveResourceDto, String resourceId) {
+            if (resourceId != null && !resourceId.equals("")) {
+                // rest api call give permission to the resource
+                String link = LINK_APPEND_RESOURCE_ID + resourceId;
+                driveResourceDto.setLink(link);
+                driveResourceDto.setResourceId(resourceId);
+                new DriveResourceRepo().updateDriveResource(driveResourceDto);
+            }
+        }
+
         private class GetResourceId extends AsyncTask<Void, Void, String> {
+            private ProgressDialog dialog = new ProgressDialog(MyRecordings.this);
 
             private String resourceId = null;
             private boolean changeListenerExecuted = false;
             private boolean syncExecuted = false;
-            private final static String LINK_APPEND_RESOURCE_ID = "https://drive.google.com/open?id=";
             private  DriveResourceDto driveResourceDto;
 
             public GetResourceId(DriveResourceDto driveResourceDto) {
@@ -202,49 +265,23 @@ public class MyRecordings extends Activity {
 
             @Override
             protected String doInBackground(Void...params) {
-
                 DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
-                if (driveFolderId == null) {
-                    //show pop up file not found on the location in the google drive,
-                    //might be deleted manually
-                    return null;
-                }
-                if (driveFolderId.getResourceId() != null && !driveFolderId.equals("")) {
-                    // rest api call give permission to the resource
-                    allowSharePermission();
-                    return LINK_APPEND_RESOURCE_ID + driveFolderId.getResourceId();
-                }
-                driveFolderId.asDriveFolder().addChangeListener(FolderStructure.getInstance().getGoogleApiClient(), new ChangeListener() {
-                    @Override
-                    public void onChange(ChangeEvent event) {
-                        Log.d(TAG, "event: " + event + " resId: " + event.getDriveId().getResourceId());
-                        resourceId = event.getDriveId().getResourceId();
-                    }
-                });
-                Drive.DriveApi.requestSync(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<com.google.android.gms.common.api.Status>() {
-                    @Override
-                    public void onResult(@NonNull com.google.android.gms.common.api.Status status) {
-                        if (status.isSuccess()) {
-                            DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
-                            if (driveFolderId != null && driveFolderId.getResourceId() != null && !driveFolderId.equals("")) {
-                                resourceId = driveFolderId.getResourceId();
-                            }
-                        }
-                    }
-                });
-                do {
-                    try {
-                        Thread.sleep(2000);
-                        if (resourceId != null) {
-                            allowSharePermission();
-                            return LINK_APPEND_RESOURCE_ID + resourceId;
-                        }
-                    } catch (InterruptedException e) {
-                        Log.e(this.getClass().getName(), "Thread interrupted exception");
-                    }
 
-                } while(!changeListenerExecuted && !syncExecuted);
-                return resourceId;
+                DriveFile file = Drive.DriveApi.getFile(FolderStructure.getInstance().getGoogleApiClient(), driveFolderId);
+                DriveResource.MetadataResult mdRslt = file.getMetadata(FolderStructure.getInstance().getGoogleApiClient()).await();
+                if (mdRslt != null && mdRslt.getStatus().isSuccess()) {
+                    String link = mdRslt.getMetadata().getWebContentLink();
+                    return  link;
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                this.dialog.setMessage("Please wait...");
+                this.dialog.show();
             }
 
             /**
@@ -272,12 +309,14 @@ public class MyRecordings extends Activity {
 
             @Override
             protected void onPostExecute(String s) {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
                 super.onPostExecute(s);
                 driveResourceDto.setLink(s);
 
                 shareTextUrl(s);
                 new DriveResourceRepo().updateDriveResource(driveResourceDto);
-                Log.d(TAG,s);
             }
         }
 
@@ -305,6 +344,25 @@ public class MyRecordings extends Activity {
         @Override
         public int getItemCount() {
             return itemsData == null ? 0 : itemsData.size();
+        }
+
+        private void allowSharePermission(final String resourceId) {
+            if (!FolderStructure.getInstance().isNetworkAvailable(context)) {
+                return;
+            }
+            com.google.api.services.drive.Drive driveService = FolderStructure.getInstance().getRestApiDriveService();
+            try {
+                Permission newPermission = new Permission();
+                newPermission.setType("anyone");
+                newPermission.setRole("reader");
+                Permission p = driveService.permissions().create(resourceId, newPermission).execute();
+            } catch (UserRecoverableAuthIOException e) {
+                // context.startActivityForResult(e.getIntent(), "1001");
+            } catch (IOException e) {
+                Log.i(TAG, e.getMessage());
+            } catch (Exception e) {
+                Log.i(TAG, e.getMessage());
+            }
         }
 
 

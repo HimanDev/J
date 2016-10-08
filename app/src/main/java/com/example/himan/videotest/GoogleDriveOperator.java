@@ -42,6 +42,7 @@ public class GoogleDriveOperator {
     private GoogleApiClient mGoogleApiClient;
     private DriveId driveId = null;
     private String resourceId = null;
+    private boolean isResourceShared = false;
 
     private com.google.api.services.drive.Drive driveService = null;
     private final String TAG="GoogleDriveOperator";
@@ -49,6 +50,7 @@ public class GoogleDriveOperator {
     Activity context;
     SharedPreferences sharedPreferences;
     static final int REQUEST_AUTHORIZATION = 1001;
+    private final static String LINK_APPEND_RESOURCE_ID = "https://drive.google.com/open?id=";
 
 
     public GoogleDriveOperator(Activity context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
@@ -60,6 +62,7 @@ public class GoogleDriveOperator {
 
     private void initGoogleDriveRestApi(GoogleAccountCredential mCredential){
         this.driveService = FolderStructure.getInstance().getRestApiDriveService();
+
     }
 
     protected Boolean doInBackground(GoogleDriveFileInfo googleDriveFileInfo) {
@@ -73,20 +76,15 @@ public class GoogleDriveOperator {
             Log.i(TAG,e.getMessage());
         }
         try {
-//            while (true) {
-
-                GoogleDriveFileInfo driveFileInfo = googleDriveFileInfo;
-                if (driveFileInfo.isApplicationStopped()) {
-                    if(resourceId!=null){
-                        allowSharePermission(null);
-                    }
-//                    break;
-                }
-                saveFileToDrive(driveFileInfo);
-//            }
+            GoogleDriveFileInfo driveFileInfo = googleDriveFileInfo;
+            if(!isResourceShared && resourceId != null){
+                allowSharePermission();
+                isResourceShared = true;
+            }
+            saveFileToDrive(driveFileInfo);
         }
         catch (Exception e){
-
+            Log.e(TAG, e.getMessage());
         }
         return true;
     }
@@ -141,10 +139,6 @@ public class GoogleDriveOperator {
 
                             MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
                                     .setTitle(title).build();
-                            /*Drive.DriveApi.getFolder(mGoogleApiClient,
-                                    driveId).createFile(mGoogleApiClient,
-                                    metadataChangeSet,
-                                    result.getDriveContents());*/
                             driveId.asDriveFolder().createFile(mGoogleApiClient,
                                     metadataChangeSet,
                                     result.getDriveContents());
@@ -181,18 +175,14 @@ public class GoogleDriveOperator {
                                         public void onChange(ChangeEvent event) {
                                             Log.d(TAG, "event: " + event + " resId: " + event.getDriveId().getResourceId());
                                             resourceId = event.getDriveId().getResourceId();
+                                            driveResource.setLink(LINK_APPEND_RESOURCE_ID+resourceId);
+                                            driveResource.setResourceId(resourceId);
+                                            new DriveResourceRepo().updateDriveResource(driveResource);
                                         }
                                     });
 
                                 }
                             });
-                            /*try {
-                                Thread.sleep(20000);
-                                allowSharePermission(title);
-                            } catch (InterruptedException e) {
-                                Log.i(TAG, e.getMessage());
-                            }*/
-
 
                         }
 
@@ -201,25 +191,12 @@ public class GoogleDriveOperator {
 
     }
 
-    private  ResultCallback<DriveResource.MetadataResult> metadataRetrievedCallback = new
-        ResultCallback<DriveResource.MetadataResult>() {
-            @Override
-            public void onResult(DriveResource.MetadataResult mdRslt) {
-                if (mdRslt != null && mdRslt.getStatus().isSuccess()) {
-                    String link = mdRslt.getMetadata().getAlternateLink();
-                    Log.i(TAG, "ALTERNATE link = " + link);
-                    String fileName = mdRslt.getMetadata().getOriginalFilename();
-                    DriveResourceDto driveResource = new DriveResourceDto( fileName, driveId.encodeToString(), resourceId, link);
-                    new DriveResourceRepo().updateDriveResource(driveResource);
-                }
-            }
-        };
     /**
      * It gives share permission to current folder uploaded or current driveId object set
      * in the driveId reference.
      *
      */
-    private void allowSharePermission(String title) {
+    private void allowSharePermission() {
         if(!FolderStructure.getInstance().isNetworkAvailable(context)){
             return;
         }
@@ -228,7 +205,7 @@ public class GoogleDriveOperator {
             newPermission.setType("anyone");
             newPermission.setRole("reader");
             Permission p = driveService.permissions().create(resourceId, newPermission).execute();
-           // driveId.asDriveFolder().getMetadata(mGoogleApiClient).setResultCallback(metadataRetrievedCallback);
+
         }
         catch(UserRecoverableAuthIOException e){
            context.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);

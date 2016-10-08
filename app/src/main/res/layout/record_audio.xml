@@ -44,16 +44,12 @@
             android:paddingBottom="10dp"
             android:padding="10dp"
             android:baselineAligned="false">
-
-            <TextView
+            <Chronometer
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="00:00:00"
-                android:id="@+id/textView9"
-                android:layout_weight=".3"
-                android:gravity="center_vertical|center_horizontal"
-                android:textColor="#FFFF9D" />
+                android:id="@+id/chronometer"
+                android:textColor="#ffffff"
+                android:textSize="18dp" />
 
         </LinearLayout>
     </RelativeLayout>

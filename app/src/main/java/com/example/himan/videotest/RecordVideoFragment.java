@@ -43,6 +43,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.app.ActivityCompat;
@@ -57,7 +58,9 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Chronometer;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -69,6 +72,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -239,7 +244,7 @@ public class RecordVideoFragment extends Fragment
     }
 
     private static File newVideoFolder;
-    private static BlockingQueue<GoogleDriveFileInfo> queue;
+//    private static BlockingQueue<GoogleDriveFileInfo> queue;
 
     /**
      * In this sample, we choose a video size with 3x4 aspect ratio. Also, we don't use sizes
@@ -296,7 +301,6 @@ public class RecordVideoFragment extends Fragment
         super.onStart();
 //          new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
 
-        googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
 
 
     }
@@ -304,9 +308,16 @@ public class RecordVideoFragment extends Fragment
     @Override
     public void onStop () {
         super.onStop();
+        chronometer.stop();
         if(mNextVideoAbsolutePath!=null && mNextVideoAbsolutePath!=""){
-            queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
-            queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+//            queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
+//            queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+            new Thread(new Runnable() {
+                public void run() {
+                    googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
+
+                }
+            }).start();
         }
 
     }
@@ -315,8 +326,16 @@ public class RecordVideoFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         newVideoFolder = FolderStructure.getInstance().getCreateNewVideoFolder();
-        queue = FolderStructure.getInstance().getQueue();
-        queue.add(GoogleDriveFileInfo.createFolderInfoObject(newVideoFolder, getString(R.string.Video_Folder_Drive_Id)));
+        googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
+
+//        queue = FolderStructure.getInstance().getQueue();
+//        queue.add(GoogleDriveFileInfo.createFolderInfoObject(newVideoFolder, getString(R.string.Video_Folder_Drive_Id)));
+        new Thread(new Runnable() {
+            public void run() {
+                googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFolderInfoObject(newVideoFolder, getString(R.string.Video_Folder_Drive_Id)));
+
+            }
+        }).start();
         return inflater.inflate(R.layout.record_video_fragment, container, false);
     }
 
@@ -328,6 +347,7 @@ public class RecordVideoFragment extends Fragment
         ivDark=(ImageView)view.findViewById(R.id.ivDark);
         ivDark.setOnClickListener(this);
         closeAppimageView=(ImageView)view.findViewById(R.id.closeAppimageView);
+        chronometer=(Chronometer)view.findViewById(R.id.chronometer);
         closeAppimageView.setOnClickListener(this);
         mTextureView.setOnTouchListener(new View.OnTouchListener() {
             private GestureDetector gestureDetector = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {
@@ -363,6 +383,10 @@ public class RecordVideoFragment extends Fragment
         } else {
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
+        if(googleDriveOperator==null){
+            googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
+
+        }
 
     }
 
@@ -374,15 +398,18 @@ public class RecordVideoFragment extends Fragment
         queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());*/
         super.onPause();
     }
-
+    private Chronometer chronometer;
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ivStartStop: {
                 if (mIsRecordingVideo) {
                     stopRecordingVideo();
+                    chronometer.setBase(SystemClock.elapsedRealtime());
                 } else {
                     startRecordingVideo();
+                    chronometer.start();
+
                 }
                 break;
             }
@@ -396,9 +423,16 @@ public class RecordVideoFragment extends Fragment
                 break;
             }
             case R.id.closeAppimageView:
-               this.getActivity().finish();
-                queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
-                queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+
+//                queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
+//                queue.add(GoogleDriveFileInfo.createApplicationStoppedInfoObject());
+                new Thread(new Runnable() {
+                    public void run() {
+                        googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath), "mp4"));
+
+                    }
+                }).start();
+                this.getActivity().finish();
         }
     }
 
@@ -525,7 +559,13 @@ public class RecordVideoFragment extends Fragment
                 public void onInfo(MediaRecorder mr, int what, int extra) {
                     Toast.makeText(getActivity(), "INFO", Toast.LENGTH_SHORT).show();
                     if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
-                        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath),"mp4"));
+//                        queue.add(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath),"mp4"));
+                        new Thread(new Runnable() {
+                            public void run() {
+                                googleDriveOperator.doInBackground(GoogleDriveFileInfo.createFileInfoObject(new File(mNextVideoAbsolutePath),"mp4"));
+
+                            }
+                        }).start();
                         stopRecordingVideo();
                         startRecordingVideo();
                         // 5 000 ms - 5 s
@@ -678,7 +718,7 @@ public class RecordVideoFragment extends Fragment
 
 //        }
         mMediaRecorder.setOutputFile(mNextVideoAbsolutePath);
-        mMediaRecorder.setMaxDuration(25000); // Set max duration 60 sec.
+        mMediaRecorder.setMaxDuration(10000); // Set max duration 60 sec.
 
         mMediaRecorder.setVideoEncodingBitRate(10000000);
         mMediaRecorder.setVideoFrameRate(30);
@@ -695,32 +735,6 @@ public class RecordVideoFragment extends Fragment
                 break;
         }
         mMediaRecorder.prepare();
-    }
-
-    private String getVideoFilePath(Context context) {
-//        return context.getExternalFilesDir(null).getAbsolutePath() + "/"
-//                + System.currentTimeMillis() + ".mp4";
-
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "MyCameraApp");
-        // This location works best if you want the created images to be shared
-        // between applications and persist after your app has been uninstalled.
-
-        // Create the storage directory if it does not exist
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d("MyCameraApp", "failed to create directory");
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "VIDEO_"+ timeStamp + ".mp4");
-        Toast.makeText(context,mediaFile.getAbsolutePath(),Toast.LENGTH_SHORT).show();
-        return mediaFile.getAbsolutePath();
     }
 
     private void startRecordingVideo() {
