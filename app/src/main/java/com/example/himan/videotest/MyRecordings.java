@@ -32,6 +32,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveFile;
+import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
 import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.events.ChangeEvent;
@@ -45,6 +46,7 @@ import com.google.api.services.drive.model.Permission;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -97,7 +99,7 @@ public class MyRecordings extends Activity {
             for (File file : files) {
                 if (file.isDirectory() && file.list().length > 0) {
                     for (File videoFiles : file.listFiles()) {
-                        dataArrayList.add(new Data(file.getName(), videoFiles.getAbsolutePath(), file.getAbsolutePath(),new Date(file.lastModified()),FolderType.VIDEO));
+                        dataArrayList.add(new Data(file.getName(), videoFiles.getAbsolutePath(), file.getAbsolutePath(), new Date(file.lastModified()), FolderType.VIDEO));
                         break;
                     }
                 }
@@ -107,11 +109,11 @@ public class MyRecordings extends Activity {
             File[] filesAudio = rootAudioFolder.listFiles();
             for (File file : filesAudio) {
                 if (file.isDirectory() && file.list().length > 0) {
-                        dataArrayList.add(new Data(file.getName(), null, file.getAbsolutePath(),new Date(file.lastModified()),FolderType.AUDIO));
+                    dataArrayList.add(new Data(file.getName(), null, file.getAbsolutePath(), new Date(file.lastModified()), FolderType.AUDIO));
 
                 }
             }
-            Collections.sort(dataArrayList,new DataComparatoor());
+            Collections.sort(dataArrayList, new DataComparatoor());
             Collections.reverse(dataArrayList);
 
             Log.i("Remote", getStatus().name());
@@ -156,22 +158,36 @@ public class MyRecordings extends Activity {
 
 
             viewHolder.txtViewTitle.setText(itemsData.get(position).getName());
+            String timeStamp = new SimpleDateFormat("d MMM yy HH:mm").format(itemsData.get(position).getLastModifyAt());
+            viewHolder.dateTimeTextView.setText(timeStamp);
             viewHolder.imageViewPlay.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(MyRecordings.this, VideoPlayBack.class);
                     intent.putExtra("folderLocation", itemsData.get(position).getFolderLocation());
-                    intent.putExtra("folderType",itemsData.get(position).getFolderType());
+                    intent.putExtra("folderType", itemsData.get(position).getFolderType());
                     startActivity(intent);
                     overridePendingTransition(R.anim.push_left, R.anim.push_right);
+
+                }
+            });
+            viewHolder.locationImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
+                    if (driveResourceDto != null && driveResourceDto.getLocation() != null)
+                        shareTextUrl(driveResourceDto.getLocation());
+                    else
+                        Log.d("hahahahaha", "nolink");
+
 
                 }
             });
             viewHolder.shareImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                  final  DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
-                    if (driveResourceDto != null){
+                    final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
+                    if (driveResourceDto != null) {
                         if (driveResourceDto.getLink() == null) {
                             new Thread(new Runnable() {
                                 @Override
@@ -184,7 +200,7 @@ public class MyRecordings extends Activity {
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                      allowSharePermission(driveResourceDto.getResourceId());
+                                    allowSharePermission(driveResourceDto.getResourceId());
                                 }
                             }).start();
                             shareTextUrl(driveResourceDto.getLink());
@@ -192,15 +208,76 @@ public class MyRecordings extends Activity {
                     }
                 }
             });
-            if(itemsData.get(position).fileUrl!=null){
+            if (itemsData.get(position).fileUrl != null) {
                 new BitmapWorkerTask(viewHolder.imageViewThumbnails, itemsData.get(position).fileUrl).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-            }else {
+            } else {
                 viewHolder.imageViewThumbnails.setImageResource(R.drawable.musical_note);
             }
+            viewHolder.deleteImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AlertDialog.Builder(MyRecordings.this)
+                            .setTitle("Delete Confirmation")
+                            .setMessage("Yes-")
+                            .setNegativeButton(R.string.delete_phone_gdrive, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // do the acknowledged action, beware, this is run on UI thread
+                                    deletePhone(itemsData.get(position).getFolderLocation());
+                                    deleteGDrive(itemsData.get(position).getName());
+                                    itemsData.remove(position);
+                                    notifyDataSetChanged();
+                                }
+                            }) // dismisses by default
+                            .setPositiveButton(R.string.delete_phone, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    deletePhone(itemsData.get(position).getFolderLocation());
+                                    itemsData.remove(position);
+                                    notifyDataSetChanged();
+                                }
+                            })
+                            .setNeutralButton(android.R.string.cancel, null)
+                            .create()
+                            .show();
+
+
+//                    File file=new File(itemsData.get(position).getFolderLocation());
+//                    if(file.exists())
+//                        file.delete();
+
+                }
+            });
         }
 
-        private void createResourceId(final DriveResourceDto driveResourceDto){
+        private void deletePhone(String folderPath) {
+            File file = new File(folderPath);
+            if (file.exists())
+                file.delete();
+        }
+
+        private void deleteGDrive(final String folderName) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(folderName);
+
+                    DriveFolder driveFolder = DriveId.decodeFromString(driveResourceDto.getDriveId()).asDriveFolder();
+                    driveFolder.delete(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(@NonNull Status status) {
+                            // if required to be deleted from database then code needs to be
+                            // written here.
+                        }
+                    });
+                }
+            }).start();
+
+
+        }
+
+        private void createResourceId(final DriveResourceDto driveResourceDto) {
             DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
             if (driveFolderId == null) {
                 //show pop up file not found on the location in the google drive,
@@ -209,29 +286,29 @@ public class MyRecordings extends Activity {
             }
             saveNewResourceIdIfCreated(driveResourceDto, driveFolderId.getResourceId());
             driveFolderId.asDriveFolder().addChangeListener(FolderStructure.getInstance().getGoogleApiClient(), new ChangeListener() {
-                    @Override
-                    public void onChange(ChangeEvent event) {
-                        Log.d(TAG, "event: " + event + " resId: " + event.getDriveId().getResourceId());
-                      String resourceId = event.getDriveId().getResourceId();
-                        if(driveResourceDto.getResourceId() == null) {
-                            saveNewResourceIdIfCreated(driveResourceDto, resourceId);
-                        }
+                @Override
+                public void onChange(ChangeEvent event) {
+                    Log.d(TAG, "event: " + event + " resId: " + event.getDriveId().getResourceId());
+                    String resourceId = event.getDriveId().getResourceId();
+                    if (driveResourceDto.getResourceId() == null) {
+                        saveNewResourceIdIfCreated(driveResourceDto, resourceId);
                     }
-                });
-                Drive.DriveApi.requestSync(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<com.google.android.gms.common.api.Status>() {
-                    @Override
-                    public void onResult(@NonNull com.google.android.gms.common.api.Status status) {
-                        if (status.isSuccess()) {
-                            DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
-                            if (driveFolderId != null && driveFolderId.getResourceId() != null && !driveFolderId.equals("")) {
-                               String resourceId = driveFolderId.getResourceId();
-                                if(driveResourceDto.getResourceId() == null) {
-                                    saveNewResourceIdIfCreated(driveResourceDto, resourceId);
-                                }
+                }
+            });
+            Drive.DriveApi.requestSync(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<com.google.android.gms.common.api.Status>() {
+                @Override
+                public void onResult(@NonNull com.google.android.gms.common.api.Status status) {
+                    if (status.isSuccess()) {
+                        DriveId driveFolderId = DriveId.decodeFromString(driveResourceDto.getDriveId());
+                        if (driveFolderId != null && driveFolderId.getResourceId() != null && !driveFolderId.equals("")) {
+                            String resourceId = driveFolderId.getResourceId();
+                            if (driveResourceDto.getResourceId() == null) {
+                                saveNewResourceIdIfCreated(driveResourceDto, resourceId);
                             }
                         }
                     }
-                });
+                }
+            });
         }
 
         private void saveNewResourceIdIfCreated(final DriveResourceDto driveResourceDto, String resourceId) {
@@ -247,9 +324,9 @@ public class MyRecordings extends Activity {
         public class ViewHolder extends RecyclerView.ViewHolder {
 
 
-            public TextView txtViewTitle;
+            public TextView txtViewTitle, dateTimeTextView;
             public LinearLayout linearLayoutThumbnail;
-            public ImageView imageViewThumbnails, imageViewPlay, shareImageView;
+            public ImageView imageViewThumbnails, imageViewPlay, shareImageView, locationImageView, deleteImageView;
 
             public ViewHolder(View itemLayoutView) {
                 super(itemLayoutView);
@@ -258,6 +335,9 @@ public class MyRecordings extends Activity {
                 imageViewThumbnails = (ImageView) itemLayoutView.findViewById(R.id.imageViewThumbnails);
                 imageViewPlay = (ImageView) itemLayoutView.findViewById(R.id.imageViewPlay);
                 shareImageView = (ImageView) itemLayoutView.findViewById(R.id.shareImageView);
+                locationImageView = (ImageView) itemLayoutView.findViewById(R.id.locationImageView);
+                dateTimeTextView = (TextView) itemLayoutView.findViewById(R.id.dateTimeTextView);
+                deleteImageView = (ImageView) itemLayoutView.findViewById(R.id.deleteImageView);
 
 
             }
@@ -382,12 +462,12 @@ public class MyRecordings extends Activity {
         public Data() {
         }
 
-        public Data(String name, String fileUrl, String folderLocation,Date lastModifyAt,FolderType folderType) {
+        public Data(String name, String fileUrl, String folderLocation, Date lastModifyAt, FolderType folderType) {
             this.name = name;
             this.fileUrl = fileUrl;
             this.folderLocation = folderLocation;
-            this.lastModifyAt=lastModifyAt;
-            this.folderType=folderType;
+            this.lastModifyAt = lastModifyAt;
+            this.folderType = folderType;
         }
 
         public String getName() {
@@ -398,14 +478,15 @@ public class MyRecordings extends Activity {
             this.name = name;
         }
     }
-    private class DataComparatoor implements Comparator<Data>{
+
+    private class DataComparatoor implements Comparator<Data> {
 
         @Override
         public int compare(Data lhs, Data rhs) {
-            if(lhs.getLastModifyAt().compareTo(rhs.getLastModifyAt())<1){
+            if (lhs.getLastModifyAt().compareTo(rhs.getLastModifyAt()) < 1) {
 
             }
-            return  lhs.getLastModifyAt().compareTo(rhs.getLastModifyAt());
+            return lhs.getLastModifyAt().compareTo(rhs.getLastModifyAt());
 
         }
     }

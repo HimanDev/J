@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="24th May"
-            android:id="@+id/textView15"
+            android:id="@+id/dateTimeTextView"
             android:textColor="#000000"
             android:gravity="center_vertical|fill_horizontal"
             android:paddingLeft="10dp"
@@ -51,7 +51,7 @@
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:id="@+id/imageView13"
+            android:id="@+id/deleteImageView"
             android:src="@drawable/trash"
             android:padding="8dp" />
     </LinearLayout>
@@ -85,7 +85,7 @@
                 <ImageView
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    android:id="@+id/imageView15"
+                    android:id="@+id/locationImageView"
                     android:src="@drawable/location"
                     android:background="@drawable/circle_background"
                     android:padding="10dp"

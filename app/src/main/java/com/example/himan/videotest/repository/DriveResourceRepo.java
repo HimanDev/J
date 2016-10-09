@@ -51,7 +51,7 @@ public class DriveResourceRepo  {
 
 
         Cursor cursor = db.query(DriveResourceDto.TABLE_DRIVE_RESOURCE, new String[]{DriveResourceDto.KEY_ID,
-                        DriveResourceDto.KEY_FOLDER_NAME, DriveResourceDto.KEY_DRIVE_ID, DriveResourceDto.KEY_RESOURCE_ID, DriveResourceDto.KEY_LINK}, DriveResourceDto.KEY_FOLDER_NAME + "=?",
+                        DriveResourceDto.KEY_FOLDER_NAME, DriveResourceDto.KEY_DRIVE_ID, DriveResourceDto.KEY_RESOURCE_ID, DriveResourceDto.KEY_LINK,DriveResourceDto.KEY_LOCATION}, DriveResourceDto.KEY_FOLDER_NAME + "=?",
                 new String[]{folderName}, null, null, null, null);
         if (cursor != null && cursor.getCount() > 0){
             cursor.moveToFirst();

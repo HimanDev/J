@@ -7,6 +7,10 @@
     <string name="description_info">Info</string>
     <string name="permission_request">This sample needs permission for camera and audio recording.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name="delete_phone">PHONE</string>
+
+    <string name="delete_phone_gdrive">PHONE &amp; G-Drive</string>
+
 
     <!--shared preferences file key-->
     <string name="PREFERENCE_FILE_KEY_GOOGLE">com.example.himan.videotest.PREFERENCE_FILE_KEY</string>
