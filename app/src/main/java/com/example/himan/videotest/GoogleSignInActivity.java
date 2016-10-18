@@ -86,15 +86,14 @@ public class GoogleSignInActivity extends AppCompatActivity implements
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent(GoogleSignInActivity.this, MainApp.class);
-                            startActivity(intent);
-                            mGoogleApiClient.reconnect();
-                        }
-                    });
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+/*                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(GoogleSignInActivity.this, MainApp.class);
+                                startActivity(intent);
+                            }
+                    });*/
+
                 } else {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -113,19 +112,27 @@ public class GoogleSignInActivity extends AppCompatActivity implements
      *
      */
     private void initSignInAndGoogleDrive() {
+        if(mAuth.getCurrentUser() == null) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .requestScopes(Plus.SCOPE_PLUS_PROFILE, Drive.SCOPE_FILE)
+                    .build();
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-               .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .requestScopes(Plus.SCOPE_PLUS_PROFILE, Drive.SCOPE_FILE)
-                .build();
-
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .addApi(Drive.API).addApi(Plus.API).addConnectionCallbacks(this)
-                .build();
-        //mGoogleApiClient.connect();
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .addApi(Drive.API).addApi(Plus.API).addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+        }
+        else{
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Drive.API).addApi(Plus.API)
+                    .addScope(Drive.SCOPE_FILE).addScope(Plus.SCOPE_PLUS_PROFILE).addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override
@@ -151,7 +158,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+       super.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Inte`nt from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -185,10 +192,17 @@ public class GoogleSignInActivity extends AppCompatActivity implements
                                     Toast.LENGTH_SHORT).show();
                         }
                         else{
-                            Intent intent = new Intent(GoogleSignInActivity.this, MainApp.class);
-                            startActivity(intent);
+                            if(!mGoogleApiClient.isConnected()) {
+                                mGoogleApiClient = new GoogleApiClient.Builder(GoogleSignInActivity.this)
+                                        .addApi(Drive.API).addApi(Plus.API)
+                                        .addScope(Drive.SCOPE_FILE).addScope(Plus.SCOPE_PLUS_PROFILE).addConnectionCallbacks(GoogleSignInActivity.this)
+                                        .addOnConnectionFailedListener(GoogleSignInActivity.this)
+                                        .build();
+                                mGoogleApiClient.connect();
+                            }
+/*                            Intent intent = new Intent(GoogleSignInActivity.this, MainApp.class);
+                            startActivity(intent);*/
                         }
-                        hideProgressDialog();
                     }
                 });
     }
@@ -234,7 +248,9 @@ public class GoogleSignInActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        showSignInView();
+        if(mAuth.getCurrentUser() == null) {
+            showSignInView();
+        }
     }
 
     private void showSignInView() {
@@ -285,8 +301,11 @@ public class GoogleSignInActivity extends AppCompatActivity implements
         if(mAuth.getCurrentUser() == null){
             return;
         }
+
         Log.i("Connected","Connect");
         if(initialised){
+            Intent intent = new Intent(GoogleSignInActivity.this, MainApp.class);
+            startActivity(intent);
             return;
         }
         Log.i(TAG, "API client connected.");
@@ -310,6 +329,9 @@ public class GoogleSignInActivity extends AppCompatActivity implements
         FolderStructure.getInstance().setRestApiDriveService(driveService);
         new DriveRestApiPermission(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         initialised = true;
+        Intent intent = new Intent(GoogleSignInActivity.this, MainApp.class);
+        hideProgressDialog();
+        startActivity(intent);
     }
 
     @Override
