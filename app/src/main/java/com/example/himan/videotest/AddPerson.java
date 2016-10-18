@@ -7,7 +7,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.himan.videotest.repository.PersonDto;
+import com.example.himan.videotest.domains.PersonDto;
 import com.example.himan.videotest.repository.PersonDatabaseRepo;
 
 /**
@@ -34,7 +34,7 @@ public class AddPerson extends Activity {
         imageViewSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(personDatabaseHandler.getContactsCount()>4){
+                if(personDatabaseHandler.getContactsCount()>=4){
                     Toast.makeText(AddPerson.this,"you can not add more than 4 users",Toast.LENGTH_LONG).show();
                 }else {
                     PersonDto person=new PersonDto(editTextName.getText().toString(),

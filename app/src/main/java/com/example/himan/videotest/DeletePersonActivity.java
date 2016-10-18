@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.himan.videotest.repository.PersonDto;
+import com.example.himan.videotest.domains.PersonDto;
 import com.example.himan.videotest.repository.PersonDatabaseRepo;
 
 import java.util.List;

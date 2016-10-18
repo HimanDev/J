@@ -53,7 +53,7 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
 
     private   int MY_PERMISSIONS_REQUEST_READ_STORAGE ;
     ImageView imageViewRecordVideo,imageViewRecordAudio,imageViewSOS;
-    LinearLayout llMyRecordings;
+    LinearLayout llMyRecordings,settingsLL;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
@@ -79,7 +79,7 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_app);
         checkPermission();
-        sharedPreferences=this.getSharedPreferences(getString(R.string.PREFERENCE_FILE_KEY_GOOGLE),Context.MODE_PRIVATE);
+        sharedPreferences=this.getSharedPreferences(getString(R.string.PREFERENCE_FILE_KEY_GOOGLE), Context.MODE_PRIVATE);
         editor=sharedPreferences.edit();
 
 
@@ -87,6 +87,7 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         imageViewRecordAudio=(ImageView)findViewById(R.id.imageViewRecordAudio);
         imageViewSOS=(ImageView)findViewById(R.id.imageViewSOS);
         llMyRecordings=(LinearLayout)findViewById(R.id.llMyRecordings);
+        settingsLL=(LinearLayout)findViewById(R.id.settingsLL);
         imageViewRecordVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,6 +129,14 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
                 startActivity(intent);
                 overridePendingTransition(R.anim.push_left, R.anim.push_right);
 
+            }
+        });
+        settingsLL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainApp.this, UserSettingActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.push_left, R.anim.push_right);
             }
         });
 

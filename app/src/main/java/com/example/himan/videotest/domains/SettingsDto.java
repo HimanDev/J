@@ -1,4 +1,4 @@
-package com.example.himan.videotest.repository;
+package com.example.himan.videotest.domains;
 
 /**
  * Created by himan on 29/8/16.

@@ -10,6 +10,8 @@
     <string name="delete_phone">PHONE</string>
 
     <string name="delete_phone_gdrive">PHONE &amp; G-Drive</string>
+    <string name="delete_message">Deleted Successfully</string>
+
 
 
     <!--shared preferences file key-->
@@ -22,5 +24,17 @@
     <string name="Audios_Folder_Name">Audios</string>
     <string name="Audio_Folder_Drive_Id">AudiosDriveId</string>
 
+    <!--shared preference for sos settings-->
+    <string name="sos_minutes">SosMinutes</string>
+    <string name="sos_message">SosMessage</string>
+
+    <!--settings key-->
+    <string name="Video_Quality">VideoQuality</string>
+    <string name="Audio_Quality">AudioQuality</string>
+    <string name="Split_Frame">SplitFrame</string>
+    <string name="record_setting">Record Settings</string>
+    <string name="pref_video_title">Video Quality</string>
+    <string name="pref_audio_title">Audio Quality</string>
+    <string name="pref_split_title">Split Length</string>
 
 </resources>

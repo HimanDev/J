@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+
+
+    <PreferenceCategory android:title="@string/record_setting" >
+
+        <ListPreference
+            android:key="@string/Video_Quality"
+            android:entries="@array/av_array"
+            android:summary="%s"
+            android:entryValues="@array/av_array"
+            android:title="@string/pref_video_title"
+            android:defaultValue="0"/>
+        <ListPreference
+            android:key="@string/Audio_Quality"
+            android:entries="@array/av_array"
+            android:summary="%s"
+            android:entryValues="@array/av_array"
+            android:title="@string/pref_audio_title"
+            android:defaultValue="0"/>
+        <ListPreference
+            android:key="@string/Split_Frame"
+            android:entries="@array/split_array"
+            android:summary="%s"
+            android:entryValues="@array/split_array_values"
+            android:title="@string/pref_split_title"
+            android:defaultValue="0"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,16 +1,13 @@
 package com.example.himan.videotest.dbhelper;
 
-import android.app.Application;
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.test.ApplicationTestCase;
 
 import com.example.himan.videotest.application.App;
-import com.example.himan.videotest.repository.DriveResourceDto;
+import com.example.himan.videotest.domains.DriveResourceDto;
 import com.example.himan.videotest.repository.DriveResourceRepo;
 import com.example.himan.videotest.repository.PersonDatabaseRepo;
-import com.example.himan.videotest.repository.PersonDto;
+import com.example.himan.videotest.domains.PersonDto;
 
 /**
  * Created by himan on 25/9/16.

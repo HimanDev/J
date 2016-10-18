@@ -11,7 +11,8 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_color">
+        android:background="@color/bg_color"
+        android:visibility="gone">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -57,15 +58,15 @@
         android:id="@+id/textView16"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
-        android:textSize="30dp"
-        android:layout_marginTop="-20dp" />
+        android:textSize="30dp" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/radious_border"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -94,33 +95,49 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp" />
 
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="fill_horizontal|center_vertical|center_horizontal">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
 
             <ImageView
-                android:layout_width="68dp"
-                android:layout_height="68dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:id="@+id/imageViewRecord"
                 android:background="@drawable/sos_button_test"
                 android:visibility="visible"
                 android:src="@drawable/tick" />
+
+            <TextView
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:text="00:00"
+                android:id="@+id/timerTextView"
+                android:background="@drawable/sos_button_test"
+                android:gravity="center_vertical|center_horizontal"
+                android:textSize="15dp"
+                android:textColor="#000000" />
+
         </LinearLayout>
+
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercit"
+        android:text="orem ipsumdolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercit"
         android:id="@+id/textView22"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"

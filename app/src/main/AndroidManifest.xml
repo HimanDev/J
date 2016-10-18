@@ -47,6 +47,8 @@
         <activity android:name=".DeletePersonActivity"></activity>
         <activity android:name=".SosActivity"></activity>
         <activity android:name=".HelpActivity"></activity>
+        <activity android:name=".UserSettingActivity"></activity>
+
 
         <service android:name=".AudioRecordService"
             android:exported="false"/>

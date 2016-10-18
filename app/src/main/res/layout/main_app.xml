@@ -38,7 +38,8 @@
             android:layout_height="wrap_content"
             android:layout_weight=".3"
             android:gravity="center_vertical|center_horizontal"
-            android:padding="5dp">
+            android:padding="5dp"
+            android:id="@+id/settingsLL">
 
             <ImageView
                 android:layout_width="46dp"

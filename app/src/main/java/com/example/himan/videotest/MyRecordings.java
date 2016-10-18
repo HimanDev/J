@@ -1,20 +1,16 @@
 package com.example.himan.videotest;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,21 +22,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.himan.videotest.repository.DriveResourceDto;
+import com.example.himan.videotest.domains.DriveResourceDto;
 import com.example.himan.videotest.repository.DriveResourceRepo;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.drive.Drive;
-import com.google.android.gms.drive.DriveFile;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
-import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.events.ChangeEvent;
 import com.google.android.gms.drive.events.ChangeListener;
-import com.google.android.gms.drive.internal.DriveServiceResponse;
-import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.model.Permission;
 
 import java.io.File;
@@ -52,9 +43,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import needle.Needle;
 
 
 public class MyRecordings extends Activity {
@@ -189,12 +177,20 @@ public class MyRecordings extends Activity {
                     final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
                     if (driveResourceDto != null) {
                         if (driveResourceDto.getLink() == null) {
+
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
                                     createResourceId(driveResourceDto);
                                 }
                             }).start();
+                            new AlertDialog.Builder(MyRecordings.this)
+                                    .setTitle("Message")
+                                    .setMessage("Videos are not yet uploaded to drive.please try later")
+                                    .setNegativeButton(R.string.delete_phone_gdrive, null)
+                                    .create()
+                                    .show();
+
 
                         } else {
                             new Thread(new Runnable() {
@@ -228,6 +224,7 @@ public class MyRecordings extends Activity {
                                     deleteGDrive(itemsData.get(position).getName());
                                     itemsData.remove(position);
                                     notifyDataSetChanged();
+                                    Toast.makeText(MyRecordings.this,R.string.delete_message,Toast.LENGTH_SHORT).show();
                                 }
                             }) // dismisses by default
                             .setPositiveButton(R.string.delete_phone, new DialogInterface.OnClickListener() {
@@ -236,6 +233,7 @@ public class MyRecordings extends Activity {
                                     deletePhone(itemsData.get(position).getFolderLocation());
                                     itemsData.remove(position);
                                     notifyDataSetChanged();
+                                    Toast.makeText(MyRecordings.this,R.string.delete_message,Toast.LENGTH_SHORT).show();
                                 }
                             })
                             .setNeutralButton(android.R.string.cancel, null)
@@ -262,7 +260,10 @@ public class MyRecordings extends Activity {
                 @Override
                 public void run() {
                     final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(folderName);
-
+                    DriveId driveId=DriveId.decodeFromString(driveResourceDto.getDriveId());
+                    if(driveResourceDto == null || driveId == null){
+                        return;
+                    }
                     DriveFolder driveFolder = DriveId.decodeFromString(driveResourceDto.getDriveId()).asDriveFolder();
                     driveFolder.delete(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<Status>() {
                         @Override

@@ -3,10 +3,9 @@ package com.example.himan.videotest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.himan.videotest.repository.DriveResourceDto;
+import com.example.himan.videotest.domains.DriveResourceDto;
 import com.example.himan.videotest.repository.DriveResourceRepo;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -15,14 +14,11 @@ import com.google.android.gms.drive.Drive;
 import com.google.android.gms.drive.DriveApi;
 import com.google.android.gms.drive.DriveFolder;
 import com.google.android.gms.drive.DriveId;
-import com.google.android.gms.drive.DriveResource;
 import com.google.android.gms.drive.MetadataChangeSet;
 import com.google.android.gms.drive.events.ChangeEvent;
 import com.google.android.gms.drive.events.ChangeListener;
-import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.model.Permission;
 
 import java.io.ByteArrayOutputStream;
@@ -31,7 +27,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by DPandey on 23-07-2016.
@@ -47,13 +42,13 @@ public class GoogleDriveOperator {
     private com.google.api.services.drive.Drive driveService = null;
     private final String TAG="GoogleDriveOperator";
     private static final int REQUEST_CODE_CREATOR = 2;
-    Activity context;
+    Context context;
     SharedPreferences sharedPreferences;
     static final int REQUEST_AUTHORIZATION = 1001;
     private final static String LINK_APPEND_RESOURCE_ID = "https://drive.google.com/open?id=";
 
 
-    public GoogleDriveOperator(Activity context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
+    public GoogleDriveOperator(Context context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
         this.mGoogleApiClient = mGoogleApiClient;
         this.context = context;
         this.sharedPreferences = context.getSharedPreferences(context.getString(R.string.PREFERENCE_FILE_KEY_GOOGLE),Context.MODE_PRIVATE);
@@ -70,7 +65,7 @@ public class GoogleDriveOperator {
             driveService.files().list().execute();
         }
         catch(UserRecoverableAuthIOException e){
-            context.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+            //context.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
         }
         catch(IOException e){
             Log.i(TAG,e.getMessage());
@@ -206,7 +201,7 @@ public class GoogleDriveOperator {
 
         }
         catch(UserRecoverableAuthIOException e){
-           context.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+          // context.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
         }
         catch (IOException e) {
             Log.i(TAG, e.getMessage());
