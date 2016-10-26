@@ -12,6 +12,7 @@ import android.location.LocationManager;
  */
 public class GetLocation {
     private Context context;
+    private static final String LOCATION_URL_APPEND = "http://www.google.com/maps/dir/";
 
     public GetLocation(Context context){
         this.context=context;
@@ -20,11 +21,23 @@ public class GetLocation {
     public String getLocationUrl(){
         Location location=getLastBestLocation();
         if(location!=null)
-            return "http://maps.google.com/?q="+location.getLatitude()+","+location.getLongitude();
+            return LOCATION_URL_APPEND+location.getLatitude()+","+location.getLongitude();
+            //return "http://maps.google.com/?q="+location.getLatitude()+","+location.getLongitude();
         return null;
 
     }
 
+    public String appendBestLocationToUrl(String locationUrl){
+        Location location=getLastBestLocation();
+        if(location == null)
+            return locationUrl;
+        if(locationUrl == null || locationUrl.isEmpty()){
+            return LOCATION_URL_APPEND + location.getLatitude()+","+location.getLongitude();
+        }
+        else{
+            return locationUrl + "/" + location.getLatitude()+","+location.getLongitude();
+        }
+    }
 
     private Location getLastBestLocation() {
         final LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);

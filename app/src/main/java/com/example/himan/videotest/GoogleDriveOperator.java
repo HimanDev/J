@@ -3,6 +3,7 @@ package com.example.himan.videotest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -43,7 +44,7 @@ public class GoogleDriveOperator {
     private DriveId driveId = null;
     private String resourceId = null;
     private boolean isResourceShared = false;
-
+    private String folderTitle = null;
     private com.google.api.services.drive.Drive driveService = null;
     private final String TAG="GoogleDriveOperator";
     private static final int REQUEST_CODE_CREATOR = 2;
@@ -142,7 +143,14 @@ public class GoogleDriveOperator {
                             driveId.asDriveFolder().createFile(mGoogleApiClient,
                                     metadataChangeSet,
                                     result.getDriveContents());
-
+                            DriveResourceRepo repo = new DriveResourceRepo();
+                            DriveResourceDto driveResourceDto = repo.getDriveResource(folderTitle);
+                            String location = driveResourceDto.getLocation();
+                            String newLocationUrl = new GetLocation(context).appendBestLocationToUrl(location);
+                            if(newLocationUrl != null && !newLocationUrl.equals(location)){
+                                driveResourceDto.setLocation(newLocationUrl);
+                                repo.updateDriveResource(driveResourceDto);
+                            }
                         }
                         else{
                            driveId = null;
@@ -155,6 +163,7 @@ public class GoogleDriveOperator {
                                 Log.i(TAG, "Exception occured while getting "+driveFileInfo.getrFolderTypeKey()+" drive Id");
                                 return;
                             }
+                            folderTitle = title;
                            MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
                                    .setTitle(title).build();
                            PendingResult result1 = parentDriveId.asDriveFolder().createFolder(mGoogleApiClient,

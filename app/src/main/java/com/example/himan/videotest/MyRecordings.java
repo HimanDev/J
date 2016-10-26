@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -175,8 +176,14 @@ public class MyRecordings extends Activity {
                 @Override
                 public void onClick(View v) {
                     final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(itemsData.get(position).getName());
-                    if (driveResourceDto != null && driveResourceDto.getLocation() != null)
-                        shareTextUrl(driveResourceDto.getLocation());
+
+                    if (driveResourceDto != null && driveResourceDto.getLocation() != null) {
+                        //shareTextUrl(driveResourceDto.getLocation());
+                        String uri = driveResourceDto.getLocation();
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                        intent.setClassName("com.google.android.apps.maps","com.google.android.maps.MapsActivity");
+                        startActivity(intent);
+                    }
                     else
                         Log.d("hahahahaha", "nolink");
 
@@ -224,10 +231,18 @@ public class MyRecordings extends Activity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // do the acknowledged action, beware, this is run on UI thread
-                                    deletePhone(itemsData.get(position).getFolderLocation());
+                                    boolean isLocalDeleted = deletePhone(itemsData.get(position).getFolderLocation());
                                     deleteGDrive(itemsData.get(position).getName());
                                     itemsData.remove(position);
                                     notifyDataSetChanged();
+                                    if(isLocalDeleted) {
+                                        Toast.makeText(MyRecordings.this, "File deleted successfully",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                    else{
+                                        Toast.makeText(MyRecordings.this, "Error encountered while deleting file",
+                                                Toast.LENGTH_LONG).show();
+                                    }
                                 }
                             }) // dismisses by default
                             .setPositiveButton(R.string.delete_phone, new DialogInterface.OnClickListener() {
@@ -251,29 +266,37 @@ public class MyRecordings extends Activity {
             });
         }
 
-        private void deletePhone(String folderPath) {
+        private boolean deletePhone(String folderPath) {
             File file = new File(folderPath);
-            if (file.exists())
-                file.delete();
+            return deleteDirectory(file);
+        }
+
+        private boolean deleteDirectory(File file){
+            if (file.exists() && file.isDirectory()){
+                File[] files = file.listFiles();
+                for (File eachFile: files) {
+                    if (eachFile.isDirectory()) {
+                        deleteDirectory(eachFile);
+                    } else {
+                        eachFile.delete();
+                    }
+                }
+                return file.delete();
+            }
+            return false;
         }
 
         private void deleteGDrive(final String folderName) {
-            new Thread(new Runnable() {
+            final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(folderName);
+
+            DriveFolder driveFolder = DriveId.decodeFromString(driveResourceDto.getDriveId()).asDriveFolder();
+            driveFolder.delete(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<Status>() {
                 @Override
-                public void run() {
-                    final DriveResourceDto driveResourceDto = new DriveResourceRepo().getDriveResource(folderName);
-
-                    DriveFolder driveFolder = DriveId.decodeFromString(driveResourceDto.getDriveId()).asDriveFolder();
-                    driveFolder.delete(FolderStructure.getInstance().getGoogleApiClient()).setResultCallback(new ResultCallback<Status>() {
-                        @Override
-                        public void onResult(@NonNull Status status) {
-                            // if required to be deleted from database then code needs to be
-                            // written here.
-                        }
-                    });
+                public void onResult(@NonNull Status status) {
+                    // if required to be deleted from database then code needs to be
+                    // written here.
                 }
-            }).start();
-
+            });
 
         }
 
