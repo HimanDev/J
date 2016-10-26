@@ -36,7 +36,7 @@ public class AudioRecordService extends Service {
     @Override
     public void onCreate() {
         Log.i(TAG, "Service onCreate");
-        googleDriveOperator = new GoogleDriveOperator(getApplicationContext(), FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
+        googleDriveOperator = new GoogleDriveOperator(getApplicationContext(), FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential(),true);
 
 
         newAudioFolder = FolderStructure.getInstance().createNewAudioFolder();

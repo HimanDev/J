@@ -3,10 +3,14 @@ package com.example.himan.videotest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 import com.example.himan.videotest.domains.DriveResourceDto;
+import com.example.himan.videotest.domains.PersonDto;
 import com.example.himan.videotest.repository.DriveResourceRepo;
+import com.example.himan.videotest.repository.PersonDatabaseRepo;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -27,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Created by DPandey on 23-07-2016.
@@ -37,7 +42,8 @@ public class GoogleDriveOperator {
     private GoogleApiClient mGoogleApiClient;
     private DriveId driveId = null;
     private String resourceId = null;
-    private boolean isResourceShared = false;
+    private boolean isResourceShared = false,isSos=false;
+
 
     private com.google.api.services.drive.Drive driveService = null;
     private final String TAG="GoogleDriveOperator";
@@ -48,10 +54,11 @@ public class GoogleDriveOperator {
     private final static String LINK_APPEND_RESOURCE_ID = "https://drive.google.com/open?id=";
 
 
-    public GoogleDriveOperator(Context context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential) {
+    public GoogleDriveOperator(Context context, GoogleApiClient mGoogleApiClient, GoogleAccountCredential mCredential,boolean isSos) {
         this.mGoogleApiClient = mGoogleApiClient;
         this.context = context;
         this.sharedPreferences = context.getSharedPreferences(context.getString(R.string.PREFERENCE_FILE_KEY_GOOGLE),Context.MODE_PRIVATE);
+        this.isSos=isSos;
         initGoogleDriveRestApi(mCredential);
     }
 
@@ -173,6 +180,31 @@ public class GoogleDriveOperator {
                                             driveResource.setLink(LINK_APPEND_RESOURCE_ID+resourceId);
                                             driveResource.setResourceId(resourceId);
                                             new DriveResourceRepo().updateDriveResource(driveResource);
+                                            if(isSos){
+                                                try {
+                                                    SharedPreferences sharedPreferences;
+                                                    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+                                                    List<PersonDto> personDtos=new PersonDatabaseRepo().getAllContacts();
+                                                    sharedPreferences.getString(context.getString(R.string.sos_message), context.getString(R.string.sos_default));
+                                                    StringBuffer finalMeaage=new StringBuffer(sharedPreferences.getString(context.getString(R.string.sos_message), context.getString(R.string.sos_default)));
+                                                    finalMeaage.append(System.getProperty("line.separator"));
+                                                    finalMeaage.append("Drive Link");
+                                                    finalMeaage.append(System.getProperty("line.separator"));
+                                                    finalMeaage.append(driveResource.getLink());
+                                                    finalMeaage.append(System.getProperty("line.separator"));
+                                                    finalMeaage.append("Location");
+                                                    finalMeaage.append(System.getProperty("line.separator"));
+                                                    finalMeaage.append(driveResource.getLocation());
+                                                    for(PersonDto personDto:personDtos){
+                                                        SmsManager smsManager = SmsManager.getDefault();
+                                                        smsManager.sendTextMessage(personDto.getPhone(), null, finalMeaage.toString(), null, null);
+                                                    }
+                                                }catch (Exception e){
+
+                                                }
+
+
+                                            }
                                         }
                                     });
 

@@ -70,7 +70,7 @@ public class AudioRecorderTest extends Activity
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         mRecorder = new MediaRecorder();
-       googleDriveOperator= new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
+       googleDriveOperator= new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential(),false);
         newAudioFolder  = FolderStructure.getInstance().createNewAudioFolder();
         new Thread(new Runnable() {
             public void run() {

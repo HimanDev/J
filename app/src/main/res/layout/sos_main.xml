@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color"
+    android:weightSum="1"
+    android:baselineAligned="false"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="HELP"
+        android:id="@+id/textView16"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="40dp" />
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical|center_horizontal">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|center_horizontal">
+
+            <ImageView
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:id="@+id/imageViewRecord"
+                android:background="@drawable/sos_button_test"
+                android:visibility="visible"
+                android:src="@drawable/tick"
+                android:paddingBottom="20dp" />
+
+            <TextView
+                android:layout_width="190dp"
+                android:layout_height="190dp"
+                android:text="00:00"
+                android:id="@+id/timerTextView"
+                android:background="@drawable/sos_button_test"
+                android:gravity="center_vertical|center_horizontal"
+                android:textSize="30dp"
+                android:textColor="#000000"
+                android:paddingBottom="16dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your SOS message, you can edit this msg in settings."
+                android:id="@+id/textView18"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:autoText="false"
+                android:textColor="@color/white"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp"
+                android:textSize="18dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="orem ipsumdolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercit"
+                android:id="@+id/sosMassageTextview"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:autoText="false"
+                android:textColor="@color/white"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

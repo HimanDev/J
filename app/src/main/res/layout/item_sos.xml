@@ -45,7 +45,7 @@
             android:background="@color/app_yello"
             android:src="@drawable/call"
             android:padding="10dp"
-            android:visibility="visible" />
+            android:visibility="gone" />
 
     </LinearLayout>
 

@@ -327,7 +327,7 @@ public class RecordVideoFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         newVideoFolder = FolderStructure.getInstance().getCreateNewVideoFolder();
-        googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
+        googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential(),false);
 
         return inflater.inflate(R.layout.record_video_fragment, container, false);
     }
@@ -377,7 +377,7 @@ public class RecordVideoFragment extends Fragment
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
         if(googleDriveOperator==null){
-            googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential());
+            googleDriveOperator=new GoogleDriveOperator(getActivity(),FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential(),false);
 
         }
 

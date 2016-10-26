@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.himan.videotest" >
+    package="com.example.himan.videotest">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature android:name="android.hardware.camera.front" />
-    <uses-feature android:name="android.hardware.microphone"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"></uses-permission>
+    <uses-feature android:name="android.hardware.microphone" />
+
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <application
+        android:name=".application.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:name=".application.App"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
-            android:name=".MainApp"
-            android:label="@string/app_name"
-            android:hardwareAccelerated="false">
+            android:name=".SplashScreen"
+            android:hardwareAccelerated="false"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,16 +48,28 @@
         <activity android:name=".SosActivity"></activity>
         <activity android:name=".HelpActivity"></activity>
         <activity android:name=".UserSettingActivity"></activity>
+        <activity android:name=".SosMainActivity"></activity>
+        <activity android:name="com.example.himan.videotest.GoogleSignInActivity" />
+        <activity android:name=".IntroActivity"></activity>
+
 
 
         <service android:name=".AudioRecordService"
             android:exported="false"/>
 
+        <activity
+            android:name=".MainApp"
+            android:label="@string/app_name" />
+
+        <service
+            android:name=".AudioRecordService"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <activity android:name=".PaymentActivity"></activity>
     </application>
 
 </manifest>

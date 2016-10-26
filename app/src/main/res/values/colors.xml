@@ -4,5 +4,17 @@
     <color name="white">#FFFFFFFF</color>
     <color name="textbox_bg_color">#beeb9f</color>
     <color name="black">#000</color>
-    <color name="app_yello">#ffff9d</color>
+    <color name="app_yello">#ff9dcb</color>
+
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_300">#E0E0E0</color>
+
+
+    <color name="spinnerItem">#AAAAAA</color>
+    <color name="editText">#AAAAAA</color>
+    <color name="buttonText">#EEEEEE</color>
+    <color name="headerText">#EEEEEE</color>
+
+    <color name="button_bg">#fafa9a</color>
+    <color name="splash_background">#13140F</color>
 </resources>

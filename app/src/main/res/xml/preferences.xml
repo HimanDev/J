@@ -27,5 +27,17 @@
             android:title="@string/pref_split_title"
             android:defaultValue="0"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/sos_setting">
+        <Preference android:title="@string/add_users" >
+            <intent android:action="android.intent.action.VIEW"
+                android:targetPackage="com.example.himan.videotest"
+                android:targetClass="com.example.himan.videotest.SosActivity"/>
+        </Preference>
+        <EditTextPreference android:title="@string/sos_message"
+            android:key="@string/sos_message"
+            android:defaultValue="@string/sos_default"
+            android:summary="@string/sos_summary_message"
+            ></EditTextPreference>
+    </PreferenceCategory>
 
 </PreferenceScreen>

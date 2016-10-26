@@ -10,6 +10,7 @@ import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -49,30 +51,19 @@ import com.google.api.services.drive.DriveScopes;
 /**
  * Created by himan on 28/6/16.
  */
-public class MainApp extends Activity implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
+public class MainApp extends Activity {
 
     private   int MY_PERMISSIONS_REQUEST_READ_STORAGE ;
     ImageView imageViewRecordVideo,imageViewRecordAudio,imageViewSOS;
     LinearLayout llMyRecordings,settingsLL;
+    LinearLayout donateMoney;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
-    //Goolge
-    GoogleAccountCredential mCredential = null;
-    private GoogleApiClient mGoogleApiClient;
     private final String TAG=MainApp.class.getSimpleName();
     private static final int REQUEST_CODE_CAPTURE_IMAGE = 1;
-    private static final int REQUEST_CODE_CREATOR = 2;
-    private static final int REQUEST_CODE_RESOLUTION = 3;
-
-    static final int REQUEST_AUTHORIZATION = 1001;
-    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-
     private static final String PREF_ACCOUNT_NAME = "accountName";
-
-    private boolean initialised = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,6 +79,16 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         imageViewSOS=(ImageView)findViewById(R.id.imageViewSOS);
         llMyRecordings=(LinearLayout)findViewById(R.id.llMyRecordings);
         settingsLL=(LinearLayout)findViewById(R.id.settingsLL);
+        donateMoney = (LinearLayout)findViewById(R.id.donateMoney);
+
+        donateMoney.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainApp.this, PaymentActivity.class);
+                startActivity(intent);
+            }
+            });
+
         imageViewRecordVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +117,7 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         imageViewSOS.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainApp.this, SosActivity.class);
+                Intent intent = new Intent(MainApp.this, SosMainActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.push_left, R.anim.push_right);
 
@@ -141,12 +142,12 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         });
 
 
+
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        initGoogleDrive();
         if(sharedPreferences==null){
             sharedPreferences=this.getPreferences(Context.MODE_PRIVATE);
             editor=sharedPreferences.edit();
@@ -166,36 +167,16 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
-        //  super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    private void initGoogleDrive(){
-        if (mGoogleApiClient == null) {
-            // Create the API client and bind it to an instance variable.
-            // We use this instance as the callback for connection and connection
-            // failures.
-            // Since no account name is passed, the user is prompted to choose.
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(Drive.API).addApi(Plus.API)
-                    .addScope(Drive.SCOPE_FILE).addScope(Plus.SCOPE_PLUS_PROFILE)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
-        mGoogleApiClient.connect();
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        initGoogleDrive();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initGoogleDrive();
     }
 
     /**
@@ -206,166 +187,6 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         super.onStop();
     }
 
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        // Called whenever the API client fails to connect.
-        Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
-        if (!result.hasResolution()) {
-            // show the localized error dialog.
-            GoogleApiAvailability.getInstance().getErrorDialog(this, result.getErrorCode(), 0).show();
-            return;
-        }
-        // The failure has a resolution. Resolve it.
-        // Called typically when the app is not yet authorized, and an
-        // authorization
-        // dialog is displayed to the user.
-        try {
-            result.startResolutionForResult(this, REQUEST_CODE_RESOLUTION);
-        } catch (IntentSender.SendIntentException e) {
-            mGoogleApiClient.connect();
-            Log.e(TAG, "Exception while starting resolution activity", e);
-        }
-    }
-
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        if(initialised){
-            return;
-        }
-        Log.i(TAG, "API client connected.");
-
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(DriveScopes.DRIVE_METADATA, DriveScopes.DRIVE))
-                .setBackOff(new ExponentialBackOff());
-        getProfileInformation();
-        createGDriveFolder();
-        com.google.api.services.drive.Drive driveService = new com.google.api.services.drive.Drive.Builder(
-                AndroidHttp.newCompatibleTransport(), JacksonFactory.getDefaultInstance(), mCredential)
-                .setApplicationName("SafeApp")
-                .build();
-//        new GoogleDriveOperator(this,mGoogleApiClient, mCredential).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
-
-        FolderStructure.getInstance().setGoogleApiClient(mGoogleApiClient);
-        FolderStructure.getInstance().setGoogleAccountCredential(mCredential);
-        FolderStructure.getInstance().setRestApiDriveService(driveService);
-
-        new DriveRestApiPermission(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        initialised = true;
-    }
-
-    /**
-     *
-     *
-     */
-    private void getProfileInformation() {
-        try {
-            if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-                com.google.android.gms.plus.model.people.Person currentPerson = Plus.PeopleApi
-                        .getCurrentPerson(mGoogleApiClient);
-                //below commented details not required as of now.
-                //String personName = currentPerson.getDisplayName();
-                //String personPhotoUrl = currentPerson.getImage().getUrl();
-                //String personGooglePlusProfile = currentPerson.getUrl();
-                String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-
-                if (mCredential.getSelectedAccountName() == null) {
-                    mCredential.setSelectedAccountName(email);
-                }
-                Log.i(TAG, "email Name" + email);
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        Log.i(TAG, "GoogleApiClient connection suspended");
-    }
-
-//    @Override
-//    public void onWindowFocusChanged(boolean hasFocus) {
-//        super.onWindowFocusChanged(hasFocus);
-//        View decorView = getWindow().getDecorView();
-//        if (hasFocus) {
-//            decorView.setSystemUiVisibility(
-//                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-//                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
-//    }
-
-    private void createGDriveFolder() {
-        // Start by creating a new contents, and setting a callback.
-        Log.i(TAG, "Creating initial Folders on google drive.");
-        String driveIdKey = sharedPreferences.getString(getString(R.string.App_Folder_Drive_Id),null);
-        try {
-            if(driveIdKey != null) {
-                DriveId driveId = DriveId.decodeFromString(driveIdKey);
-                if (driveId != null) {
-                    createGDriveSubFolder(driveId, getString(R.string.Videos_Folder_Name), getString(R.string.Video_Folder_Drive_Id), true);
-                    createGDriveSubFolder(driveId, getString(R.string.Audios_Folder_Name), getString(R.string.Audio_Folder_Drive_Id), true);
-                    return;
-                }
-            }
-        }
-
-
-        catch(IllegalArgumentException | NullPointerException e){
-            Log.e(TAG, "Initial Folders on google drive does not exist/deleted.",e);
-        }
-
-        MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                .setTitle(getString(R.string.App_Folder_Name)).build();
-
-        PendingResult result = Drive.DriveApi.getRootFolder(mGoogleApiClient).createFolder(mGoogleApiClient,
-                metadataChangeSet);
-        result.setResultCallback(new ResultCallback<DriveFolder.DriveFolderResult>() {
-            @Override
-            public void onResult(DriveFolder.DriveFolderResult driveFolderResult) {
-                DriveId driveId = driveFolderResult.getDriveFolder().getDriveId();
-                editor.putString(getString(R.string.App_Folder_Drive_Id),driveId.encodeToString());
-                editor.commit();
-                createGDriveSubFolder(driveId, getString(R.string.Videos_Folder_Name), getString(R.string.Video_Folder_Drive_Id), false);
-                createGDriveSubFolder(driveId, getString(R.string.Audios_Folder_Name), getString(R.string.Audio_Folder_Drive_Id), false);
-            }
-        });
-
-    }
-
-    private void createGDriveSubFolder(DriveId parentDriveId, String title, final String  rDriveIdKey, boolean canExist) {
-        if(canExist){
-            String driveIdKey = sharedPreferences.getString(rDriveIdKey,null);
-            try {
-                DriveId driveId = DriveId.decodeFromString(driveIdKey);
-                if(driveId != null){
-                    return;
-                }
-            }
-            catch(IllegalArgumentException e){
-                Log.e(TAG, "Initial"+title+" Folder on google drive does not exist/deleted.");
-            }
-            return;
-        }
-        Log.i(TAG, "Creating initial Sub Folders on google drive.");
-        MetadataChangeSet metadataChangeSet = new MetadataChangeSet.Builder()
-                .setTitle(title).build();
-        PendingResult result = parentDriveId.asDriveFolder().createFolder(mGoogleApiClient,
-                metadataChangeSet);
-        result.setResultCallback(new ResultCallback<DriveFolder.DriveFolderResult>() {
-            @Override
-            public void onResult(DriveFolder.DriveFolderResult driveFolderResult) {
-                DriveId driveId = driveFolderResult.getDriveFolder().getDriveId();
-                editor.putString(rDriveIdKey, driveId.encodeToString());
-                editor.commit();
-            }
-        });
-    }
 
     private void checkPermission(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -383,33 +204,4 @@ public class MainApp extends Activity implements GoogleApiClient.ConnectionCallb
         }
     }
 
-    /**
-     * This class is used to just ask for google drive permission.
-     *
-     */
-    private class DriveRestApiPermission extends AsyncTask<Void, Void, Void> {
-
-        private Activity activity = null;
-
-        DriveRestApiPermission(Activity activity){
-            this.activity = activity;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try{
-                com.google.api.services.drive.Drive driveService = FolderStructure.getInstance().getRestApiDriveService();
-                com.google.api.services.drive.model.FileList fileList = driveService.files().list().execute();
-                fileList.toString();
-            }
-            catch(UserRecoverableAuthIOException e){
-                activity.startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
-            }
-            catch(IOException e){
-                Log.i(TAG,e.getMessage());
-            }
-
-            return null;
-        }
-    }
 }

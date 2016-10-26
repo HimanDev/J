@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.MultiSelectListPreference;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,14 +40,19 @@ public class SosActivity extends Activity {
     PersonDatabaseRepo personDatabaseHandler;
     private ImageView imageViewAddPerson, imageViewDeletePerson, imageViewRecord, settingsImageView;
     private MyAdapter adapter;
-    private SharedPreferences sharedPreferences;
-    private TextView timerTextView;
+    private SharedPreferences sharedPreferences,sharedPreferencesSettings;
+    private TextView timerTextView,sosMassageTextview;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.sharedPreferences = this.getSharedPreferences(this.getString(R.string.PREFERENCE_FILE_KEY_GOOGLE), Context.MODE_PRIVATE);
+//        sharedPreferencesSettings    = PreferenceManager.getDefaultSharedPreferences(this);
+//            Toast.makeText(getActivity(),sharedPreferences.getString(getString(R.string.Audio_Quality),null)
+//                    +" "+sharedPreferences.getString(getString(R.string.Video_Quality),null)
+//                    +" "+sharedPreferences.getString(getString(R.string.Split_Frame),null),Toast.LENGTH_LONG).show();
+
 
 //        new GoogleDriveOperator(this,FolderStructure.getInstance().getGoogleApiClient(), FolderStructure.getInstance().getGoogleAccountCredential()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, FolderStructure.getInstance().getQueue());
         personDatabaseHandler = new PersonDatabaseRepo();
@@ -61,6 +67,7 @@ public class SosActivity extends Activity {
         imageViewRecord = (ImageView) findViewById(R.id.imageViewRecord);
         settingsImageView = (ImageView) findViewById(R.id.settingsImageView);
         timerTextView = (TextView) findViewById(R.id.timerTextView);
+
         updateUi();
         imageViewAddPerson.setOnClickListener(new View.OnClickListener() {
             @Override

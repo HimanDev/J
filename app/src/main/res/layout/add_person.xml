@@ -155,8 +155,8 @@
     </LinearLayout>
 
     <ImageView
-        android:layout_width="147dp"
-        android:layout_height="59dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/imageViewSave"
         android:background="@drawable/curved_rectangle_yellow"
         android:src="@drawable/add_user"
@@ -175,3 +175,217 @@
         android:paddingLeft="20dp" />
 
 </LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:orientation="vertical" android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="@color/bg_color"-->
+    <!--android:weightSum="1"-->
+    <!--android:baselineAligned="false"-->
+    <!--android:gravity="center_horizontal">-->
+
+    <!--<LinearLayout-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/bg_color"-->
+        <!--android:visibility="gone">-->
+
+        <!--<LinearLayout-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight=".5"-->
+            <!--android:gravity="right|top">-->
+
+            <!--<ImageView-->
+                <!--android:layout_width="48dp"-->
+                <!--android:layout_height="48dp"-->
+                <!--android:id="@+id/imageViewClose"-->
+                <!--android:src="@drawable/close_yellow" />-->
+        <!--</LinearLayout>-->
+    <!--</LinearLayout>-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+        <!--android:text="Add Person"-->
+        <!--android:id="@+id/textView16"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:textSize="30dp" />-->
+
+    <!--<LinearLayout-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:paddingTop="20dp"-->
+        <!--android:paddingBottom="40dp"-->
+        <!--android:paddingLeft="20dp"-->
+        <!--android:paddingRight="20dp">-->
+
+        <!--<LinearLayout-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="center_vertical|center_horizontal"-->
+            <!--android:layout_marginTop="20dp">-->
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:id="@+id/input_layout_name"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/editTextName"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:singleLine="true"-->
+                    <!--android:hint="@string/hint_name"-->
+                    <!--android:textColor="@color/white"-->
+                    <!--android:textColorHint="@color/white"-->
+                    <!--android:textColorHighlight="@color/white"-->
+                    <!--android:textColorLink="@color/white" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
+
+
+
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="center_vertical|center_horizontal"-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:weightSum="1">-->
+
+            <!--<LinearLayout-->
+                <!--android:orientation="horizontal"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+
+                <!--<EditText-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:id="@+id/editTextCode"-->
+                    <!--android:textColor="@color/black"-->
+                    <!--android:background="@color/app_yello"-->
+                    <!--android:layout_marginLeft="20dp"-->
+                    <!--android:textSize="@dimen/textbox_text_size"-->
+                    <!--android:layout_weight="3"-->
+                    <!--android:text="+49"-->
+                    <!--android:hint="+49"-->
+                    <!--android:paddingLeft="10dp"-->
+                    <!--android:visibility="gone" />-->
+                <!--<android.support.design.widget.TextInputLayout-->
+                    <!--android:id="@+id/input_layout_phoneno"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1">-->
+
+                    <!--<EditText-->
+                        <!--android:id="@+id/editTextPhoneNo"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:singleLine="true"-->
+                        <!--android:hint="@string/hint_name" />-->
+                <!--</android.support.design.widget.TextInputLayout>-->
+
+
+
+            <!--</LinearLayout>-->
+
+        <!--</LinearLayout>-->
+
+        <!--<LinearLayout-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:gravity="center_vertical|center_horizontal"-->
+            <!--android:layout_marginTop="20dp" >-->
+
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:id="@+id/input_layout_email"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/editTextEmail"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:inputType="textEmailAddress"-->
+                    <!--android:hint="@string/hint_email" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
+
+            <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:text="Email "&ndash;&gt;-->
+                <!--&lt;!&ndash;android:id="@+id/textView19"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:textColor="@color/white"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:textSize="@dimen/textlabel_size" />&ndash;&gt;-->
+
+            <!--&lt;!&ndash;<EditText&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:id="@+id/editTextEmail"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_gravity="center_horizontal"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:textColor="@color/black"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:background="@color/textbox_bg_color"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_marginLeft="20dp"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:textSize="@dimen/textbox_text_size"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:hint="Email"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:paddingLeft="10dp" />&ndash;&gt;-->
+        <!--</LinearLayout>-->
+    <!--</LinearLayout>-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Save"-->
+        <!--android:id="@+id/button"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:theme="@style/AppTheme.Button"-->
+        <!--android:textSize="20dp"-->
+        <!--android:paddingLeft="30dp"-->
+        <!--android:paddingRight="30dp"-->
+        <!--android:paddingTop="10dp"-->
+        <!--android:paddingBottom="10dp" />-->
+
+    <!--<ImageView-->
+        <!--android:layout_width="147dp"-->
+        <!--android:layout_height="59dp"-->
+        <!--android:id="@+id/imageViewSave"-->
+        <!--android:background="@drawable/curved_rectangle_yellow"-->
+        <!--android:src="@drawable/add_user"-->
+        <!--android:padding="10dp" />-->
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="orem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercit"-->
+        <!--android:id="@+id/textView22"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:autoText="false"-->
+        <!--android:textColor="@color/white"-->
+        <!--android:paddingRight="20dp"-->
+        <!--android:paddingLeft="20dp" />-->
+
+<!--</LinearLayout>-->
