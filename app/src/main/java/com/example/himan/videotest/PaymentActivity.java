@@ -35,7 +35,7 @@ public class PaymentActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_payment);
+        setContentView(R.layout.payment_main);
         progressFragment = ProgressDialogFragment.newInstance(R.string.progressMessage);
     }
     public void saveCreditCard(PaymentForm form) {

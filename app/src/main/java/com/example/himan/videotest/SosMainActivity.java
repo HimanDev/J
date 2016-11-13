@@ -96,6 +96,7 @@ public class SosMainActivity extends Activity {
         if (AudioRecordService.isRunning) {
             imageViewRecord.setVisibility(View.GONE);
             timerTextView.setVisibility(View.VISIBLE);
+            timerTextView.setText("Sent");
         } else {
             imageViewRecord.setVisibility(View.VISIBLE);
             timerTextView.setVisibility(View.GONE);

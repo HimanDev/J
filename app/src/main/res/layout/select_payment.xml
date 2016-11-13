@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fcfc9b"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Donate"
+        android:id="@+id/textView28"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry&apos;s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,"
+        android:id="@+id/textView29"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:padding="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Please choose an amount"
+        android:id="@+id/textView30"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$1"
+        android:id="@+id/button1"
+        android:background="@drawable/payment_button"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$25"
+        android:id="@+id/button2"
+        android:background="@drawable/payment_button"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="$100"
+        android:id="@+id/button3"
+        android:background="@drawable/payment_button"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You Choose"
+        android:id="@+id/button4"
+        android:background="@drawable/payment_button"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal" />
+</LinearLayout>

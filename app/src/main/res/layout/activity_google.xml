@@ -1,22 +1,103 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_layout"
-    android:layout_width="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#DFD809"
-    android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:background="@color/common_plus_signin_btn_text_dark_disabled"
-        android:orientation="vertical"
-        android:gravity="center_vertical|center_horizontal">
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
-            android:layout_width="wrap_content"
+    android:background="#13140F"
+    android:gravity="center_vertical|center_horizontal">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView4"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/lion" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Brave Cam"
+                android:id="@+id/textView4"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#ffffff"
+                android:textSize="50dp"
+                android:layout_marginTop="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="By KOP Berlin"
+                android:id="@+id/textView17"
+                android:layout_gravity="center_horizontal"
+                android:textColor="#D4FF00"
+                android:layout_marginRight="-60dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
-            tools:visibility="gone"
-            android:layout_below="@+id/sign_out_and_disconnect" />
-    </LinearLayout>
-</LinearLayout>
+            android:background="#D4FF00"
+            android:layout_gravity="bottom"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical"
+            android:id="@+id/sign_in_button">
+
+            <ImageView
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:id="@+id/imageView12"
+                android:adjustViewBounds="false"
+                android:src="@drawable/google_sign_in" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Sign in with Google"
+                android:id="@+id/textView27"
+                android:textColor="#000000"
+                android:textIsSelectable="false"
+                android:textSize="22dp"
+                android:padding="10dp"
+                android:gravity="center_vertical|center_horizontal" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/main_layout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="#DFD809"-->
+    <!--android:orientation="vertical">-->
+    <!--<LinearLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@color/common_plus_signin_btn_text_dark_disabled"-->
+        <!--android:orientation="vertical"-->
+        <!--android:gravity="center_vertical|center_horizontal">-->
+        <!--<com.google.android.gms.common.SignInButton-->
+            <!--android:id="@+id/sign_in_button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:visibility="visible"-->
+            <!--tools:visibility="gone"-->
+            <!--android:layout_below="@+id/sign_out_and_disconnect" />-->
+    <!--</LinearLayout>-->
+<!--</LinearLayout>-->
